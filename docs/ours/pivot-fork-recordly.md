@@ -57,6 +57,14 @@ Essai de l'encodeur matériel avant chaque enregistrement, bascule automatique v
 - **Redémarrer à zéro** : la prise abandonnée est **supprimée** (pas gardée dans les bruts), avec un **court délai pour annuler** le redémarrage.
 - Défauts proposés : Windows Ctrl+Maj+R / P / M / S ; Mac ⌘+Maj+R / P / M / S. Raccourci de redémarrage à choisir.
 
+### Décisions de produit, élément 4 (frappe et zoom), 27/10/2026
+- Règle : un clic suivi d'**au moins 2 touches de texte dans les 3 secondes** démarre une session de saisie. L'espace seul, les flèches et les touches de modification ne démarrent rien (cas Figma) ; l'espace compte une fois la saisie commencée.
+- Le zoom reste ouvert pendant la saisie et se referme **2 secondes après la dernière frappe**.
+- Le zoom reste **centré sur l'endroit du clic** (on ne suit pas le curseur de texte).
+- Dans l'éditeur, cette zone se retouche comme les autres (raccourcir, supprimer).
+- Vie privée : on enregistre seulement l'instant et la catégorie (texte / autre) de la frappe, jamais la touche. Ne vaut que pour les nouveaux enregistrements.
+- Constat : les suggestions de zoom de Recordly n'utilisent que les clics explicites (le classement « champ de texte » n'y sert pas).
+
 ## Plan
 
 1. **Mise en place** : le propriétaire crée le fork sur GitHub (bouton Fork, nom de travail au choix) ; on l'ajoute à la session ; on vérifie qu'il se construit et tourne sur Windows et Mac.
