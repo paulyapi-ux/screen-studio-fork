@@ -54,6 +54,7 @@ Essai de l'encodeur matériel avant chaque enregistrement, bascule automatique v
 - **Retour visuel** discret sur la barre d'enregistrement (micro barré, son système coupé, pause).
 - **Tous modifiables** dans un menu « Raccourcis » des réglages, avec détection des conflits. Recordly a déjà ce menu pour les 6 raccourcis de l'éditeur (`src/lib/shortcuts.ts`, `ShortcutsConfigDialog`) : on l'étend aux raccourcis d'enregistrement.
 - Constat dans le code : Recordly n'a **aucun raccourci global** (pas de `globalShortcut`) ; tout est à ajouter.
+- **Redémarrer à zéro** : la prise abandonnée est **supprimée** (pas gardée dans les bruts), avec un **court délai pour annuler** le redémarrage.
 - Défauts proposés : Windows Ctrl+Maj+R / P / M / S ; Mac ⌘+Maj+R / P / M / S. Raccourci de redémarrage à choisir.
 
 ## Plan
