@@ -1,0 +1,89 @@
+{
+  "formatVersion": 1,
+  "composition": {
+    "preset": "webcam-fullscreen",
+    "canvas": {
+      "aspect": "16:9",
+      "baseSize": {
+        "width": 1920,
+        "height": 1080
+      }
+    },
+    "background": {
+      "type": "color",
+      "color": {
+        "value": "#111827"
+      }
+    },
+    "motionBlur": {
+      "enabled": true,
+      "strength": 0.5
+    },
+    "zones": [
+      {
+        "id": "zone_webcam",
+        "source": "webcam",
+        "visible": true,
+        "z": 0,
+        "rect": {
+          "x": 0,
+          "y": 0,
+          "width": 1,
+          "height": 1
+        },
+        "crop": {
+          "x": 0,
+          "y": 0,
+          "width": 1,
+          "height": 1
+        },
+        "shape": "rect",
+        "radius": 0.0,
+        "margin": 0.0,
+        "shadow": {
+          "enabled": true,
+          "blur": 0.03,
+          "offsetY": 0.012,
+          "color": "#00000073"
+        },
+        "border": {
+          "enabled": false,
+          "width": 0.004,
+          "color": "#FFFFFF"
+        }
+      },
+      {
+        "id": "zone_screen",
+        "source": "screen",
+        "visible": true,
+        "z": 1,
+        "rect": {
+          "x": 0.6,
+          "y": 0.62,
+          "width": 0.36,
+          "height": 0.3
+        },
+        "crop": {
+          "x": 0,
+          "y": 0,
+          "width": 1,
+          "height": 1
+        },
+        "shape": "rounded",
+        "radius": 0.015,
+        "margin": 0.0,
+        "shadow": {
+          "enabled": true,
+          "blur": 0.03,
+          "offsetY": 0.012,
+          "color": "#00000073"
+        },
+        "border": {
+          "enabled": false,
+          "width": 0.004,
+          "color": "#FFFFFF"
+        }
+      }
+    ]
+  }
+}
