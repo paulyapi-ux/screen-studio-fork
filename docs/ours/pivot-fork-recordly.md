@@ -48,6 +48,14 @@ Essai de l'encodeur matériel avant chaque enregistrement, bascule automatique v
 - Seule trace : une ligne dans le fichier de diagnostic interne (bascule, images sautées).
 - Limite connue : en 4K le mode logiciel charge fortement le processeur et peut sauter des images ; en 1080p le risque est faible. Qualité d'image équivalente à débit égal (non mesuré sur la machine du propriétaire).
 
+### Décisions de produit, élément 3 (raccourcis), 27/10/2026
+- Raccourcis **globaux** (actifs même quand une autre application est au premier plan) : démarrer/arrêter, pause/reprendre, couper/rétablir le micro, couper/rétablir le son système, et **redémarrer l'enregistrement à zéro** en un geste.
+- Les coupures de son sont notées dans le projet sans effacer l'audio.
+- **Retour visuel** discret sur la barre d'enregistrement (micro barré, son système coupé, pause).
+- **Tous modifiables** dans un menu « Raccourcis » des réglages, avec détection des conflits. Recordly a déjà ce menu pour les 6 raccourcis de l'éditeur (`src/lib/shortcuts.ts`, `ShortcutsConfigDialog`) : on l'étend aux raccourcis d'enregistrement.
+- Constat dans le code : Recordly n'a **aucun raccourci global** (pas de `globalShortcut`) ; tout est à ajouter.
+- Défauts proposés : Windows Ctrl+Maj+R / P / M / S ; Mac ⌘+Maj+R / P / M / S. Raccourci de redémarrage à choisir.
+
 ## Plan
 
 1. **Mise en place** : le propriétaire crée le fork sur GitHub (bouton Fork, nom de travail au choix) ; on l'ajoute à la session ; on vérifie qu'il se construit et tourne sur Windows et Mac.
