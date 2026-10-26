@@ -1,7 +1,7 @@
 /* biome-ignore-all lint/correctness/useExhaustiveDependencies: grouped editor domain objects contain the thumbnail renderer dependencies. */
 import { type RefObject, useCallback, useEffect, useRef } from "react";
+import { PROJECT_THUMBNAIL_WIDTH, PROJECT_THUMBNAIL_HEIGHT } from "@/lib/projectThumbnail";
 import { FrameRenderer } from "@/lib/exporter/frameRenderer";
-import { PROJECT_THUMBNAIL_HEIGHT, PROJECT_THUMBNAIL_WIDTH } from "@/lib/projectThumbnail";
 import { toFileUrl } from "../projectPersistence";
 import type { useAppearanceState } from "../state/useAppearanceState";
 import type { useProjectState } from "../state/useProjectState";
@@ -55,7 +55,6 @@ export function useProjectLibraryController({
 		cursorStyle,
 		cursorSway,
 		padding,
-		composition,
 		resolvedWebcamVideoUrl,
 		shadowIntensity,
 		wallpaper,
@@ -192,7 +191,6 @@ export function useProjectLibraryController({
 					connectedZoomEasing,
 					borderRadius,
 					padding,
-					screenRect: composition.screenRect,
 					cropRegion,
 					webcam,
 					webcamUrl:
@@ -305,7 +303,6 @@ export function useProjectLibraryController({
 		cursorTelemetry,
 		clipRegions,
 		padding,
-		composition,
 		resolvedWebcamVideoUrl,
 		shadowIntensity,
 		effectiveShowCursor,

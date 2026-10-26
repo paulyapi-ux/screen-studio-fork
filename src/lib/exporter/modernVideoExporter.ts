@@ -41,7 +41,6 @@ import {
 	getWebcamOverlaySizePx,
 	isWebcamCropRegionDefault,
 } from "@/components/video-editor/webcamOverlay";
-import type { NormalizedRect } from "@/lib/composition/geometry";
 import { getEffectiveVideoStreamDurationSeconds } from "@/lib/mediaTiming";
 import {
 	DEFAULT_WALLPAPER_PATH,
@@ -117,8 +116,6 @@ interface VideoExporterConfig extends ExportConfig {
 	connectedZoomEasing?: ZoomTransitionEasing;
 	borderRadius?: number;
 	padding?: Padding | number;
-	/** Free composition: the screen fitted inside this canvas-fraction rectangle (replaces padding). */
-	screenRect?: NormalizedRect | null;
 	videoPadding?: Padding | number;
 	cropRegion: CropRegion;
 	webcam?: WebcamOverlaySettings;
@@ -628,7 +625,6 @@ export class ModernVideoExporter {
 					connectedZoomEasing: this.config.connectedZoomEasing,
 					borderRadius: this.config.borderRadius,
 					padding: this.config.padding,
-					screenRect: this.config.screenRect,
 					cropRegion: this.config.cropRegion,
 					webcam: this.config.webcam,
 					webcamUrl: this.config.webcamUrl,
@@ -2460,7 +2456,6 @@ export class ModernVideoExporter {
 			width: this.config.width,
 			height: this.config.height,
 			padding: this.config.padding ?? 0,
-			screenRect: this.config.screenRect,
 			cropRegion: this.config.cropRegion,
 			videoWidth: videoInfo.width,
 			videoHeight: videoInfo.height,

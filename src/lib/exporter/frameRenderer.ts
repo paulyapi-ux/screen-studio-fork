@@ -44,10 +44,7 @@ import {
 } from "@/components/video-editor/videoPlayback/motionSmoothing";
 import { getSceneEffectMetrics } from "@/components/video-editor/videoPlayback/sceneEffects";
 import { resolveSceneZoomTarget } from "@/components/video-editor/videoPlayback/sceneMotion";
-import {
-	getWebcamMediaTargetTimeSeconds,
-	isWebcamVisibleAtSourceTime,
-} from "@/components/video-editor/videoPlayback/webcamSync";
+import { getWebcamMediaTargetTimeSeconds, isWebcamVisibleAtSourceTime } from "@/components/video-editor/videoPlayback/webcamSync";
 import {
 	applyZoomTransform,
 	computeZoomTransform,
@@ -63,7 +60,6 @@ import {
 	scaleWebcamOverlayPixels,
 } from "@/components/video-editor/webcamOverlay";
 import { getAssetPath, getExportableVideoUrl, getRenderableAssetUrl } from "@/lib/assetPath";
-import type { NormalizedRect } from "@/lib/composition/geometry";
 import { getWebcamShadowFilter } from "@/lib/exporter/shadowProfile";
 import { drawSquircleOnCanvas, drawSquircleOnGraphics } from "@/lib/geometry/squircle";
 import {
@@ -79,6 +75,7 @@ import { renderAnnotations } from "./annotationRenderer";
 import { renderCaptions } from "./captionRenderer";
 import { ForwardFrameSource } from "./forwardFrameSource";
 import { resolveMediaElementSource } from "./localMediaSource";
+
 
 interface FrameRenderConfig {
 	timelineEffects?: boolean;
@@ -103,8 +100,6 @@ interface FrameRenderConfig {
 	connectedZoomEasing?: ZoomTransitionEasing;
 	borderRadius?: number;
 	padding?: Padding | number;
-	/** Free composition: the screen fitted inside this canvas-fraction rectangle (replaces padding). */
-	screenRect?: NormalizedRect | null;
 	cropRegion: CropRegion;
 	webcam?: WebcamOverlaySettings;
 	webcamUrl?: string | null;
@@ -1544,7 +1539,6 @@ export class FrameRenderer {
 			cropRegion,
 			borderRadius = 0,
 			padding = 0,
-			screenRect,
 			videoWidth,
 			videoHeight,
 		} = this.config;
@@ -1553,7 +1547,6 @@ export class FrameRenderer {
 			width,
 			height,
 			padding,
-			screenRect,
 			frameInsets: null,
 			cropRegion,
 			videoWidth,
@@ -1746,11 +1739,7 @@ export class FrameRenderer {
 		const webcam = this.config.webcam;
 		const webcamDecodedFrame = this.webcamDecodedFrame;
 		const webcamVideo = this.webcamVideoElement;
-		if (
-			!webcam?.enabled ||
-			!isWebcamVisibleAtSourceTime(webcam, this.currentVideoTime) ||
-			(!webcamDecodedFrame && !webcamVideo)
-		) {
+		if (!webcam?.enabled || !isWebcamVisibleAtSourceTime(webcam, this.currentVideoTime) || (!webcamDecodedFrame && !webcamVideo)) {
 			return;
 		}
 

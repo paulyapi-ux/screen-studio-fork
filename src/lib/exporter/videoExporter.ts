@@ -1,3 +1,4 @@
+import { requiresClipTimelineRendering } from "./clipTimeline";
 import type {
 	AnnotationRegion,
 	AudioRegion,
@@ -16,10 +17,8 @@ import type {
 	ZoomRegion,
 	ZoomTransitionEasing,
 } from "@/components/video-editor/types";
-import type { NormalizedRect } from "@/lib/composition/geometry";
 import { getEffectiveVideoStreamDurationSeconds } from "@/lib/mediaTiming";
 import { AudioProcessor, isAacAudioEncodingSupported } from "./audioEncoder";
-import { requiresClipTimelineRendering } from "./clipTimeline";
 import { buildEditedTrackSourceSegments, classifyEditedTrackStrategy } from "./editedTrackStrategy";
 import {
 	advanceFinalizationProgress,
@@ -67,8 +66,6 @@ interface VideoExporterConfig extends ExportConfig {
 	connectedZoomEasing?: ZoomTransitionEasing;
 	borderRadius?: number;
 	padding?: Padding | number;
-	/** Free composition: the screen fitted inside this canvas-fraction rectangle (replaces padding). */
-	screenRect?: NormalizedRect | null;
 	videoPadding?: number;
 	cropRegion: CropRegion;
 	webcam?: WebcamOverlaySettings;
@@ -239,7 +236,6 @@ export class VideoExporter {
 				connectedZoomEasing: this.config.connectedZoomEasing,
 				borderRadius: this.config.borderRadius,
 				padding: this.config.padding,
-				screenRect: this.config.screenRect,
 				cropRegion: this.config.cropRegion,
 				webcam: this.config.webcam,
 				webcamUrl: this.config.webcamUrl,

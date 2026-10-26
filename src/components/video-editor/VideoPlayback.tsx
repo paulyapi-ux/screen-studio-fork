@@ -12,7 +12,6 @@ import {
 	useState,
 } from "react";
 import { getAssetPath, getRenderableAssetUrl, getRenderableVideoUrl } from "@/lib/assetPath";
-import type { NormalizedRect } from "@/lib/composition/geometry";
 import { getWebcamShadowFilter } from "@/lib/exporter/shadowProfile";
 import { getSquircleSvgPath } from "@/lib/geometry/squircle";
 import {
@@ -101,7 +100,6 @@ import {
 	preloadCursorAssets,
 } from "./videoPlayback/cursorRenderer";
 import { clampFocusToStage as clampFocusToStageUtil } from "./videoPlayback/focusUtils";
-import { getFrameMotionSample } from "./videoPlayback/frameMotionSample";
 import { layoutVideoContent as layoutVideoContentUtil } from "./videoPlayback/layoutUtils";
 import { clamp01 } from "./videoPlayback/mathUtils";
 import {
@@ -113,18 +111,19 @@ import {
 } from "./videoPlayback/motionSmoothing";
 import { updateOverlayIndicator } from "./videoPlayback/overlayUtils";
 import { supportsPreviewPlaybackRate } from "./videoPlayback/playbackRate";
+import { getFrameMotionSample } from "./videoPlayback/frameMotionSample";
 import { PreviewVideoSource } from "./videoPlayback/previewVideoSource";
+import { usePreviewVideoReady } from "./videoPlayback/usePreviewVideoReady";
 import { getSceneEffectMetrics } from "./videoPlayback/sceneEffects";
 import {
 	resolvePreviewMotionMode,
 	resolveSceneZoomTarget,
 	shouldComposePreviewFrame,
 } from "./videoPlayback/sceneMotion";
-import { usePreviewVideoReady } from "./videoPlayback/usePreviewVideoReady";
 import {
 	getWebcamMediaTargetTimeSeconds,
-	isWebcamMediaSynchronized,
 	isWebcamVisibleAtSourceTime,
+	isWebcamMediaSynchronized,
 	shouldSeekWebcamMedia,
 } from "./videoPlayback/webcamSync";
 import {
@@ -248,7 +247,6 @@ interface VideoPlaybackProps {
 	connectedZoomEasing?: ZoomTransitionEasing;
 	borderRadius?: number;
 	padding?: Padding | number;
-	screenRect?: NormalizedRect | null;
 	cropRegion?: import("./types").CropRegion;
 	webcam?: WebcamOverlaySettings;
 	webcamVideoPath?: string | null;
@@ -335,7 +333,6 @@ const VideoPlayback = forwardRef<VideoPlaybackRef, VideoPlaybackProps>(
 			connectedZoomEasing = DEFAULT_CONNECTED_ZOOM_EASING,
 			borderRadius = 0,
 			padding = DEFAULT_PADDING,
-			screenRect = null,
 			cropRegion,
 			webcam,
 			webcamVideoPath,
@@ -1016,7 +1013,6 @@ const VideoPlayback = forwardRef<VideoPlaybackRef, VideoPlaybackProps>(
 				lockedVideoDimensions: lockedVideoDimensionsRef.current,
 				borderRadius,
 				padding,
-				screenRect,
 				frameInsets: null,
 			});
 
@@ -1073,7 +1069,6 @@ const VideoPlayback = forwardRef<VideoPlaybackRef, VideoPlaybackProps>(
 			cropRegion,
 			borderRadius,
 			padding,
-			screenRect,
 			applyWebcamBubbleLayout,
 			syncPreviewMotionBlurQuality,
 		]);

@@ -213,7 +213,6 @@ interface LayoutParams {
 	padding?: Padding | number;
 	/** Screen insets from the active device frame, used to scale/center the full frame */
 	frameInsets?: { top: number; right: number; bottom: number; left: number } | null;
-	screenRect?: NormalizedRect | null;
 }
 
 interface LayoutResult {
@@ -243,7 +242,6 @@ export function layoutVideoContent(params: LayoutParams): LayoutResult | null {
 		borderRadius = 0,
 		padding = 0,
 		frameInsets,
-		screenRect,
 	} = params;
 
 	const videoWidth = lockedVideoDimensions?.width || videoElement.videoWidth;
@@ -270,7 +268,6 @@ export function layoutVideoContent(params: LayoutParams): LayoutResult | null {
 		height,
 		padding,
 		frameInsets,
-		screenRect,
 		cropRegion: crop,
 		videoWidth,
 		videoHeight,

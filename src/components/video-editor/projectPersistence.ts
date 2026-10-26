@@ -1,6 +1,5 @@
-import type { SourceAudioTrackSettings } from "@/components/video-editor/audio/audioTypes";
-import { type CompositionSettings, normalizeComposition } from "@/lib/composition/settings";
 import { getLocalMediaServerPath } from "@/lib/localMediaUrl";
+import type { SourceAudioTrackSettings } from "@/components/video-editor/audio/audioTypes";
 import { DEFAULT_WALLPAPER_PATH } from "@/lib/wallpapers";
 import { ASPECT_RATIOS, type AspectRatio, isCustomAspectRatio } from "@/utils/aspectRatioUtils";
 import { closeClipGaps, rippleRegionAnchors, rippleRegions } from "./clipSequence";
@@ -121,7 +120,6 @@ export interface ProjectEditorState {
 	cursorSway: number;
 	borderRadius: number;
 	padding: Padding;
-	composition: CompositionSettings;
 	cropRegion: CropRegion;
 	zoomRegions: ZoomRegion[];
 	trimRegions: TrimRegion[];
@@ -939,7 +937,6 @@ export function normalizeProjectEditor(editor: Partial<ProjectEditorState>): Pro
 			: normalizedAudioRegions,
 		autoCaptions: normalizedAutoCaptions,
 		autoCaptionSettings: normalizedAutoCaptionSettings,
-		composition: normalizeComposition((editor as Partial<ProjectEditorState>).composition),
 		webcam: {
 			visibleRanges: Array.isArray(webcam.visibleRanges)
 				? webcam.visibleRanges
