@@ -93,6 +93,7 @@ export function EditorVideoPreview({
 			connectedZoomEasing={appearance.connectedZoomEasing}
 			borderRadius={appearance.borderRadius}
 			padding={appearance.padding}
+			screenRect={appearance.composition.screenRect}
 			cropRegion={appearance.cropRegion}
 			webcam={appearance.webcam}
 			webcamVideoPath={

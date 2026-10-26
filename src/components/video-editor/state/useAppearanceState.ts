@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { type CompositionSettings, DEFAULT_COMPOSITION } from "@/lib/composition/settings";
 import type { EditorPreferences } from "../editorPreferences";
 import type {
 	CropRegion,
@@ -109,6 +110,7 @@ export function useAppearanceState(preferences: EditorPreferences) {
 	const [cursorSway, setCursorSway] = useState(preferences.cursorSway);
 	const [borderRadius, setBorderRadius] = useState(preferences.borderRadius);
 	const [padding, setPadding] = useState(preferences.padding);
+	const [composition, setComposition] = useState<CompositionSettings>(DEFAULT_COMPOSITION);
 	const [cropRegion, setCropRegion] = useState<CropRegion>(DEFAULT_CROP_REGION);
 	const [webcam, setWebcam] = useState<WebcamOverlaySettings>(
 		preferences.webcam ?? DEFAULT_WEBCAM_OVERLAY,
@@ -194,6 +196,8 @@ export function useAppearanceState(preferences: EditorPreferences) {
 		setBorderRadius,
 		padding,
 		setPadding,
+		composition,
+		setComposition,
 		cropRegion,
 		setCropRegion,
 		webcam,

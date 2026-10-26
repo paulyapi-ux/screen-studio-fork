@@ -3,8 +3,8 @@ import type {
 	AnnotationRegion,
 	AutoCaptionSettings,
 	CaptionCue,
-	CursorClickEffectStyle,
 	CropRegion,
+	CursorClickEffectStyle,
 	CursorStyle,
 	CursorTelemetryPoint,
 	Padding,
@@ -15,6 +15,7 @@ import type {
 	ZoomRegion,
 	ZoomTransitionEasing,
 } from "@/components/video-editor/types";
+import type { NormalizedRect } from "@/lib/composition/geometry";
 import { FrameRenderer } from "./frameRenderer";
 import { StreamingVideoDecoder } from "./streamingDecoder";
 import type {
@@ -57,6 +58,8 @@ interface GifExporterConfig {
 	connectedZoomEasing?: ZoomTransitionEasing;
 	borderRadius?: number;
 	padding?: Padding | number;
+	/** Free composition: the screen fitted inside this canvas-fraction rectangle (replaces padding). */
+	screenRect?: NormalizedRect | null;
 	videoPadding?: Padding | number;
 	cropRegion: CropRegion;
 	webcam?: WebcamOverlaySettings;
@@ -157,6 +160,7 @@ export function buildGifFrameRendererConfig(
 		connectedZoomEasing: config.connectedZoomEasing,
 		borderRadius: config.borderRadius,
 		padding: config.padding,
+		screenRect: config.screenRect,
 		cropRegion: config.cropRegion,
 		webcam: config.webcam,
 		webcamUrl: config.webcamUrl,
