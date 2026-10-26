@@ -65,6 +65,9 @@ Essai de l'encodeur matériel avant chaque enregistrement, bascule automatique v
 - Vie privée : on enregistre seulement l'instant et la catégorie (texte / autre) de la frappe, jamais la touche. Ne vaut que pour les nouveaux enregistrements.
 - Constat : les suggestions de zoom de Recordly n'utilisent que les clics explicites (le classement « champ de texte » n'y sert pas).
 
+### Décision, élément 5 (réglages du zoom), 27/10/2026
+- On garde **tels quels** les réglages de zoom de Recordly (regroupement 2,5 s, marge 0,5 s, transitions). Rien à ajouter pour l'instant.
+
 ## Plan
 
 1. **Mise en place** : le propriétaire crée le fork sur GitHub (bouton Fork, nom de travail au choix) ; on l'ajoute à la session ; on vérifie qu'il se construit et tourne sur Windows et Mac.
