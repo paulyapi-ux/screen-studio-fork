@@ -42,6 +42,12 @@ Essai de l'encodeur matériel avant chaque enregistrement, bascule automatique v
 5. Sources : on garde ce que Recordly propose déjà (écran, webcam, annotations inchangées).
 6. Redimensionner l'écran garde les proportions de la vidéo ; le recadrage reste un réglage séparé.
 
+### Décisions de produit, élément 2 (secours d'encodeur Windows), 27/10/2026
+- Essai de l'encodeur matériel au démarrage de chaque enregistrement ; s'il ne répond pas, bascule automatique vers le logiciel.
+- **Silencieux** : aucune notification, aucun réglage manuel. Le mode logiciel est un cas exceptionnel.
+- Seule trace : une ligne dans le fichier de diagnostic interne (bascule, images sautées).
+- Limite connue : en 4K le mode logiciel charge fortement le processeur et peut sauter des images ; en 1080p le risque est faible. Qualité d'image équivalente à débit égal (non mesuré sur la machine du propriétaire).
+
 ## Plan
 
 1. **Mise en place** : le propriétaire crée le fork sur GitHub (bouton Fork, nom de travail au choix) ; on l'ajoute à la session ; on vérifie qu'il se construit et tourne sur Windows et Mac.
