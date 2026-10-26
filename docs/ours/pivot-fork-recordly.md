@@ -19,8 +19,8 @@ Enregistrement écran ou fenêtre, micro et son système (ScreenCaptureKit sur M
 Recordly n'a ni grille, ni magnétisme, ni verrouillage, ni composition à plusieurs sources (vérifié dans son code : aucune occurrence). À construire :
 - **Déplacer et redimensionner chaque source directement sur le canevas** (écran, webcam, et plus tard d'autres sources), à la souris.
 - **Grille d'alignement** avec **magnétisme** : les sources s'accrochent à la grille et aux bords des autres sources ; guides visibles pendant le déplacement. Dispositions rapides : côte à côte, l'une au-dessus de l'autre, etc.
-- **Verrouillage de position** : une icône par source (et un verrou général). Une source verrouillée ne bouge plus, ni à la souris ni par accident, ni quand on change de format ; sa position et ses marges restent exactes.
-- **Compositions sauvegardées et réutilisables** (fichier de composition, indépendant de la vidéo source) : on retrouve exactement les mêmes emplacements d'un projet à l'autre. Compositions par défaut : long (16:9), court (9:16), webcam plein écran (voir `presets/`).
+- **Verrouillage de position** : un cadenas par source (pas de verrou général, décision du 27/10). Une source verrouillée ne bouge plus, ni à la souris ni par accident, ni quand on change de format ; sa position et ses marges restent exactes.
+- **Compositions sauvegardées et réutilisables** (fichier de composition, indépendant de la vidéo source) : on retrouve exactement les mêmes emplacements d'un projet à l'autre. **Pas de composition par défaut** (décision du 27/10) : les compositions sont créées et sauvegardées par l'utilisateur. Les modèles de `compositions-par-defaut/` ne servent que de référence.
 - Règle de la spec §7 : changer de format ne déplace pas les sources ; on les replace soi-même (et les sources verrouillées restent où elles sont).
 
 ### 2. Encodage Windows robuste
@@ -34,12 +34,20 @@ Essai de l'encodeur matériel avant chaque enregistrement, bascule automatique v
 - Touches enregistrées sans leur code (vie privée).
 - Reprise après arrêt brutal (Recordly en a une version ; comparer).
 
+### Décisions de produit, élément 1 (composition libre), 27/10/2026
+1. Un nouveau projet démarre comme chez Recordly (écran centré avec marges, webcam en coin). Le mode libre s'active quand on déplace une source.
+2. Une composition sauvegardée est liée à son format (16:9, 9:16…) et n'est proposée que sur ce format.
+3. La grille n'apparaît que si on l'allume. Magnétisme et guides d'alignement toujours actifs pendant un déplacement ; une touche (Alt) les coupe momentanément.
+4. Un cadenas par source : position et taille bloquées, habillage (arrondi, ombre, contour) toujours modifiable. Pas de cadenas global.
+5. Sources : on garde ce que Recordly propose déjà (écran, webcam, annotations inchangées).
+6. Redimensionner l'écran garde les proportions de la vidéo ; le recadrage reste un réglage séparé.
+
 ## Plan
 
 1. **Mise en place** : le propriétaire crée le fork sur GitHub (bouton Fork, nom de travail au choix) ; on l'ajoute à la session ; on vérifie qu'il se construit et tourne sur Windows et Mac.
 2. **Inventaire précis** : comparer la spec au code de Recordly, point par point (existe / partiel / manque), dans un tableau.
 3. **Nouveau nom, logo, retrait des services Recordly** (compte, marketplace, mises à jour automatiques, annonces, liens de retour d'information) ; mentions de licence AGPL et d'attribution conservées.
-4. **Ajouts, par priorité** : (a) composition libre avec grille, magnétisme, verrouillage et compositions sauvegardées ; (b) secours d'encodeur Windows ; (c) frappe et zoom, coupure du son par raccourci ; (d) qualité d'aperçu et export selon la spec.
+4. **Ajouts, par priorité** : (a) composition libre avec grille, magnétisme, verrouillage et compositions sauvegardées ; (b) secours d'encodeur Windows ; (c) frappe et zoom, coupure du son par raccourci ; (d) qualité d'aperçu. **L'export reste celui de Recordly** (décision du 27/10).
 5. **Rester à jour** : récupérer régulièrement les nouveautés de Recordly ; reverser ce qui est utile à tous.
 
 ## À ne pas oublier
