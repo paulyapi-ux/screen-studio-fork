@@ -14,6 +14,11 @@ add_executable(wgc-capture
 
 target_compile_options(wgc-capture PRIVATE /EHsc /W3 /utf-8)
 
+# C++/WinRT falls back to <experimental/coroutine> when building as C++17. Recent MSVC
+# toolsets (VS 2026, MSVC 14.51) turn that header's deprecation notice into a hard error
+# (STL1011). Silence it until the helper moves to C++20 <coroutine>.
+target_compile_definitions(wgc-capture PRIVATE _SILENCE_EXPERIMENTAL_COROUTINE_DEPRECATION_WARNINGS)
+
 target_link_libraries(wgc-capture PRIVATE
   windowsapp
   d3d11
