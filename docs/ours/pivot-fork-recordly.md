@@ -73,6 +73,12 @@ Essai de l'encodeur matériel avant chaque enregistrement, bascule automatique v
 - Emplacement : **juste sous l'aperçu** (à améliorer plus tard avec l'interface ; l'essentiel est que ça fonctionne).
 - Choix **mémorisé pour toute l'application** (pas par projet). **Pas de réglage automatique** : c'est l'utilisateur qui choisit.
 
+## Ordre de construction (validé le 27/10/2026, rien n'est commencé)
+1. Qualité d'aperçu. 2. Secours d'encodeur Windows (à tester sur le PC). 3. Raccourcis globaux + retour visuel. 4. Frappe et zoom.
+5. Composition libre, en quatre sous-étapes : cadre libre de l'écran, webcam déplaçable, grille + magnétisme + cadenas, compositions sauvegardées.
+6. Nettoyage : nom, logo, retrait du compte, du cloud, des annonces, des mises à jour.
+Une étape à la fois, testée par le propriétaire avant la suivante.
+
 ## Plan
 
 1. **Mise en place** : le propriétaire crée le fork sur GitHub (bouton Fork, nom de travail au choix) ; on l'ajoute à la session ; on vérifie qu'il se construit et tourne sur Windows et Mac.
