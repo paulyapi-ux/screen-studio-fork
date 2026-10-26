@@ -1,4 +1,5 @@
 import { Application, Graphics, Sprite } from "pixi.js";
+import { fitAspectInRect, type NormalizedRect } from "@/lib/composition/geometry";
 import { drawSquircleOnGraphics } from "@/lib/geometry/squircle";
 import { ADVANCED_VERTICAL_PADDING_MAX, type CropRegion, type Padding } from "../types";
 
@@ -49,8 +50,25 @@ export function computePaddedLayout(params: {
 	cropRegion: CropRegion;
 	videoWidth: number;
 	videoHeight: number;
+	/**
+	 * Free composition: the screen is fitted (same aspect ratio) inside this rectangle,
+	 * expressed as fractions of the canvas. Replaces padding when set.
+	 */
+	screenRect?: NormalizedRect | null;
 }): PaddedLayoutResult {
-	const { width, height, padding, frameInsets, cropRegion, videoWidth, videoHeight } = params;
+	const { width, height, padding, frameInsets, cropRegion, videoWidth, videoHeight, screenRect } =
+		params;
+
+	if (screenRect) {
+		return computeFreeRectLayout({
+			width,
+			height,
+			cropRegion,
+			videoWidth,
+			videoHeight,
+			screenRect,
+		});
+	}
 
 	// Apply asymmetrical padding
 	const p =
@@ -135,6 +153,45 @@ export function computePaddedLayout(params: {
 		spriteY,
 		fullFrameDisplayW,
 		fullFrameDisplayH,
+		fullVideoDisplayWidth,
+		fullVideoDisplayHeight,
+		croppedDisplayWidth,
+		croppedDisplayHeight,
+		cropStartX: crop.x * videoWidth,
+		cropStartY: crop.y * videoHeight,
+	};
+}
+
+function computeFreeRectLayout(params: {
+	width: number;
+	height: number;
+	cropRegion: CropRegion;
+	videoWidth: number;
+	videoHeight: number;
+	screenRect: NormalizedRect;
+}): PaddedLayoutResult {
+	const { width, height, cropRegion: crop, videoWidth, videoHeight, screenRect } = params;
+	const croppedVideoWidth = videoWidth * crop.width;
+	const croppedVideoHeight = videoHeight * crop.height;
+	const aspect = croppedVideoHeight > 0 ? croppedVideoWidth / croppedVideoHeight : 1;
+	const fitted = fitAspectInRect(screenRect, aspect, { width, height });
+
+	const croppedDisplayWidth = fitted.width * width;
+	const croppedDisplayHeight = fitted.height * height;
+	const scale = croppedVideoWidth > 0 ? croppedDisplayWidth / croppedVideoWidth : 0;
+	const fullVideoDisplayWidth = videoWidth * scale;
+	const fullVideoDisplayHeight = videoHeight * scale;
+	const centerOffsetX = fitted.x * width;
+	const centerOffsetY = fitted.y * height;
+
+	return {
+		scale,
+		centerOffsetX,
+		centerOffsetY,
+		spriteX: centerOffsetX - crop.x * fullVideoDisplayWidth,
+		spriteY: centerOffsetY - crop.y * fullVideoDisplayHeight,
+		fullFrameDisplayW: croppedDisplayWidth,
+		fullFrameDisplayH: croppedDisplayHeight,
 		fullVideoDisplayWidth,
 		fullVideoDisplayHeight,
 		croppedDisplayWidth,
