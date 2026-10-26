@@ -68,6 +68,11 @@ Essai de l'encodeur matériel avant chaque enregistrement, bascule automatique v
 ### Décision, élément 5 (réglages du zoom), 27/10/2026
 - On garde **tels quels** les réglages de zoom de Recordly (regroupement 2,5 s, marge 0,5 s, transitions). Rien à ajouter pour l'instant.
 
+### Décisions de produit, élément 6 (qualité d'aperçu), 27/10/2026
+- Trois niveaux : Complète (par défaut), 1/2, 1/4. N'affecte jamais le fichier exporté.
+- Emplacement : **juste sous l'aperçu** (à améliorer plus tard avec l'interface ; l'essentiel est que ça fonctionne).
+- Choix **mémorisé pour toute l'application** (pas par projet). **Pas de réglage automatique** : c'est l'utilisateur qui choisit.
+
 ## Plan
 
 1. **Mise en place** : le propriétaire crée le fork sur GitHub (bouton Fork, nom de travail au choix) ; on l'ajoute à la session ; on vérifie qu'il se construit et tourne sur Windows et Mac.
