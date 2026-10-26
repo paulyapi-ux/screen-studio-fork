@@ -23,6 +23,26 @@ describe("configureWithWindowsCmakeGenerator", () => {
 		expect(clearCache).toHaveBeenCalledTimes(1);
 	});
 
+	it("retries Visual Studio 2026 with its own toolset when the v143 toolset is missing", () => {
+		const attempted = [];
+
+		const selected = configureWithWindowsCmakeGenerator({
+			prefix: "test",
+			clearCache: vi.fn(),
+			log: vi.fn(),
+			configure: (generator, toolset) => {
+				attempted.push({ name: generator, toolset });
+				if (toolset === "v143") throw new Error("MSB8020: v143 build tools cannot be found");
+			},
+		});
+
+		expect(selected).toBe("Visual Studio 18 2026");
+		expect(attempted).toEqual([
+			{ name: "Visual Studio 18 2026", toolset: "v143" },
+			{ name: "Visual Studio 18 2026", toolset: undefined },
+		]);
+	});
+
 	it("falls back in supported-version order and clears stale CMake state", () => {
 		const attempted = [];
 		const clearCache = vi.fn();
@@ -43,8 +63,8 @@ describe("configureWithWindowsCmakeGenerator", () => {
 		expect(attempted).toEqual(
 			WINDOWS_CMAKE_GENERATORS.map(({ name, toolset }) => ({ name, toolset })),
 		);
-		expect(clearCache).toHaveBeenCalledTimes(3);
-		expect(log).toHaveBeenCalledTimes(2);
+		expect(clearCache).toHaveBeenCalledTimes(WINDOWS_CMAKE_GENERATORS.length);
+		expect(log).toHaveBeenCalledTimes(WINDOWS_CMAKE_GENERATORS.length - 1);
 		expect(selected).toBe("Visual Studio 16 2019");
 	});
 
