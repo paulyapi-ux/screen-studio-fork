@@ -13,12 +13,15 @@ const stages = [
 export function OnboardingLayout({
 	stage,
 	onStageChange,
-	canViewPermissions,
+	canViewPermissions = true,
+	showStageNav = true,
 	children,
 }: {
 	stage: OnboardingStage;
-	onStageChange: (stage: OnboardingStage) => void;
-	canViewPermissions: boolean;
+	onStageChange?: (stage: OnboardingStage) => void;
+	canViewPermissions?: boolean;
+	/** Hide the page dots when there is a single page (no account step in this fork). */
+	showStageNav?: boolean;
 	children: ReactNode;
 }) {
 	const reduceMotion = useReducedMotion();
@@ -46,27 +49,29 @@ export function OnboardingLayout({
 			>
 				{children}
 			</motion.div>
-			<nav
-				aria-label="Onboarding pages"
-				className="flex shrink-0 justify-center gap-1 px-6 pb-4 pt-2"
-			>
-				{stages.map(({ key, label }) => (
-					<button
-						key={key}
-						type="button"
-						aria-label={label}
-						aria-current={stage === key ? "page" : undefined}
-						disabled={key === "permissions" && !canViewPermissions}
-						onClick={() => onStageChange(key)}
-						className="group flex size-8 cursor-pointer items-center justify-center rounded-full outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-40"
-					>
-						<span
-							aria-hidden="true"
-							className={`h-2 rounded-full transition-[width,background-color] motion-reduce:transition-none ${stage === key ? "w-6 bg-accent" : "w-2 bg-foreground/25 group-hover:bg-foreground/45"}`}
-						/>
-					</button>
-				))}
-			</nav>
+			{showStageNav && (
+				<nav
+					aria-label="Onboarding pages"
+					className="flex shrink-0 justify-center gap-1 px-6 pb-4 pt-2"
+				>
+					{stages.map(({ key, label }) => (
+						<button
+							key={key}
+							type="button"
+							aria-label={label}
+							aria-current={stage === key ? "page" : undefined}
+							disabled={key === "permissions" && !canViewPermissions}
+							onClick={() => onStageChange?.(key)}
+							className="group flex size-8 cursor-pointer items-center justify-center rounded-full outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-40"
+						>
+							<span
+								aria-hidden="true"
+								className={`h-2 rounded-full transition-[width,background-color] motion-reduce:transition-none ${stage === key ? "w-6 bg-accent" : "w-2 bg-foreground/25 group-hover:bg-foreground/45"}`}
+							/>
+						</button>
+					))}
+				</nav>
+			)}
 		</div>
 	);
 }

@@ -153,13 +153,7 @@ export function EditorShell(props: Props) {
 		[settingsPanelProps, showOnboarding, auth.user],
 	);
 	const onboarding = (
-		<OnboardingController
-			requestNonce={onboardingRequest}
-			ready={!project.loading && !auth.loading}
-			user={auth.user}
-			configured={auth.configured}
-			callbackError={auth.callbackError}
-		/>
+		<OnboardingController requestNonce={onboardingRequest} ready={!project.loading} />
 	);
 	const editorDialogs = (
 		<AccountProfileContext.Provider value={auth.user}>
