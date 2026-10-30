@@ -73,6 +73,8 @@ Essai de l'encodeur matériel avant chaque enregistrement, bascule automatique v
 - Emplacement : **juste sous l'aperçu** (à améliorer plus tard avec l'interface ; l'essentiel est que ça fonctionne).
 - Choix **mémorisé pour toute l'application** (pas par projet). **Pas de réglage automatique** : c'est l'utilisateur qui choisit.
 
+- **Fait (étape 1)** : le niveau d'aperçu règle la finesse du moteur graphique (écran, curseur, effets). La webcam, les sous-titres et les annotations sont des éléments de page, donc restent nets : **voulu**, validé le 30/10/2026 (flouter la webcam n'allégerait rien).
+
 ## Ordre de construction (validé le 27/10/2026, rien n'est commencé)
 1. Qualité d'aperçu. 2. Secours d'encodeur Windows (à tester sur le PC). 3. Raccourcis globaux + retour visuel. 4. Frappe et zoom.
 5. Composition libre, en quatre sous-étapes : cadre libre de l'écran, webcam déplaçable, grille + magnétisme + cadenas, compositions sauvegardées.
