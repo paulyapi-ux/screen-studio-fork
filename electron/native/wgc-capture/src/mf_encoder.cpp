@@ -32,6 +32,11 @@ static UINT32 calculateScreenRecordingBitrate(int width, int height, int fps) {
     return static_cast<UINT32>(static_cast<double>(baseBitrate) * boost + 0.5);
 }
 
+// How long the hardware encoder gets to produce its first frame. In the background (start-up)
+// nobody waits, so it can be generous; when a recording is waiting on it, one second is the limit.
+static constexpr DWORD kBackgroundProbeTimeoutMs = 3000;
+static constexpr DWORD kOnDemandTrialTimeoutMs = 1000;
+
 // Hands one NV12 frame to a sink writer.
 static bool submitNv12Sample(IMFSinkWriter* writer, DWORD streamIndex,
                              const std::vector<uint8_t>& frameBuffer,
@@ -107,7 +112,11 @@ bool MFEncoder::initialize(const std::wstring& outputPath, int width, int height
     if (hardwareVerdict >= 0) {
         usingHardware_ = hardwareVerdict == 1;  // already tested at app start-up: no waiting here
     } else {
-        usingHardware_ = hardwareEncoderResponds();
+        // The user is waiting at this point (Record was pressed before the start-up test ended),
+        // so give the encoder one second at most.
+        const ULONGLONG trialStarted = GetTickCount64();
+        usingHardware_ = hardwareEncoderResponds(kOnDemandTrialTimeoutMs);
+        std::cerr << "Encoder trial took " << (GetTickCount64() - trialStarted) << " ms" << std::endl;
     }
     if (!usingHardware_) {
         std::cerr << "Encoder: hardware H.264 unavailable, using the software encoder" << std::endl;
@@ -244,7 +253,7 @@ bool MFEncoder::createSinkWriter(const std::wstring& outputPath, bool hardware,
 
 // Sends a few test frames to a throwaway hardware-encoder writer and checks that it produces
 // output. A healthy encoder answers within a fraction of a second; a stuck one never does.
-bool MFEncoder::hardwareEncoderResponds() {
+bool MFEncoder::hardwareEncoderResponds(DWORD timeoutMs) {
     // Test hook: pretend the hardware encoder is unavailable.
     char forced[8] = {};
     if (GetEnvironmentVariableA("SCREEN_STUDIO_FORCE_SOFTWARE_ENCODER", forced, sizeof(forced)) > 0 &&
@@ -253,7 +262,6 @@ bool MFEncoder::hardwareEncoderResponds() {
     }
 
     constexpr int kTrialFrames = 12;
-    constexpr DWORD kTrialTimeoutMs = 3000;
     constexpr DWORD kPollIntervalMs = 20;
 
     // Throwaway file in the temp folder, so a stuck encoder never leaves debris next to the recording.
@@ -284,7 +292,7 @@ bool MFEncoder::hardwareEncoderResponds() {
     }
 
     bool works = false;
-    for (DWORD waited = 0; waited < kTrialTimeoutMs; waited += kPollIntervalMs) {
+    for (DWORD waited = 0; waited < timeoutMs; waited += kPollIntervalMs) {
         MF_SINK_WRITER_STATISTICS stats = {};
         stats.cb = sizeof(stats);
         if (SUCCEEDED(probeWriter->GetStatistics(probeStream, &stats)) && stats.qwNumSamplesEncoded > 0) {
@@ -319,7 +327,7 @@ bool MFEncoder::probeHardwareEncoder(int width, int height, int fps, int64_t& el
     if (FAILED(hr)) return false;
 
     const ULONGLONG started = GetTickCount64();
-    const bool works = encoder.hardwareEncoderResponds();
+    const bool works = encoder.hardwareEncoderResponds(kBackgroundProbeTimeoutMs);
     elapsedMs = static_cast<int64_t>(GetTickCount64() - started);
     return works;  // no MFShutdown on purpose, see the header
 }

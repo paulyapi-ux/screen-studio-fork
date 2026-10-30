@@ -37,7 +37,7 @@ private:
     bool writeNv12SampleLocked(const std::vector<uint8_t>& frameBuffer, int64_t timestampHns);
     bool createSinkWriter(const std::wstring& outputPath, bool hardware,
                           ComPtr<IMFSinkWriter>& writer, DWORD& streamIndex);
-    bool hardwareEncoderResponds();
+    bool hardwareEncoderResponds(DWORD timeoutMs);
 
     ComPtr<IMFSinkWriter> sinkWriter_;
     ID3D11Device* device_ = nullptr;

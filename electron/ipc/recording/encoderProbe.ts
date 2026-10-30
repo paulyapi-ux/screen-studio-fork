@@ -83,13 +83,16 @@ export function startHardwareEncoderProbe({
 		let settled = false;
 		let output = "";
 		let child: ChildProcess;
+		const startedAt = Date.now();
 
 		const finish = (verdict: HardwareEncoderVerdict, detail: string) => {
 			if (settled) return;
 			settled = true;
 			clearTimeout(timer);
 			state = { verdict, width, height };
-			log(`[encoder-probe] hardware H.264: ${verdict} (${detail})`);
+			log(
+				`[encoder-probe] hardware H.264: ${verdict} (${detail}, ${Date.now() - startedAt} ms in total)`,
+			);
 			resolve(verdict);
 		};
 
@@ -137,7 +140,7 @@ export function startHardwareEncoderProbe({
 				resolve("unknown");
 				return;
 			}
-			finish(parsed.hardware ? "yes" : "no", `${parsed.ms} ms`);
+			finish(parsed.hardware ? "yes" : "no", `test itself ${parsed.ms} ms`);
 		});
 	});
 }
