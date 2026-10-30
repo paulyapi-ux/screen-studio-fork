@@ -188,6 +188,12 @@
 	"export": {
 		"processingAudioEdits": "Audio verwerken met snelheids-/overlay-bewerkingen"
 	},
+	"previewQuality": {
+		"label": "Voorbeeld",
+		"full": "Volledig",
+		"half": "1/2",
+		"quarter": "1/4"
+	},
 	"toolbar": {
 		"addLayer": "Laag toevoegen",
 		"splitClip": "Clip splitsen (C)"

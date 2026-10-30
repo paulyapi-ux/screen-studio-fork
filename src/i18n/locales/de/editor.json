@@ -186,6 +186,12 @@
 	"export": {
 		"processingAudioEdits": "Audio mit Geschwindigkeits-/Overlay-Bearbeitungen wird verarbeitet"
 	},
+	"previewQuality": {
+		"label": "Vorschau",
+		"full": "Voll",
+		"half": "1/2",
+		"quarter": "1/4"
+	},
 	"toolbar": {
 		"addLayer": "Ebene hinzufügen",
 		"splitClip": "Clip teilen (C)"

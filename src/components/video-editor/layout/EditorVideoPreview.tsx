@@ -1,6 +1,7 @@
 import type { ComponentProps, Dispatch, RefObject, SetStateAction } from "react";
 import type { AspectRatio } from "@/utils/aspectRatioUtils";
 import type { useVideoEditorAudio } from "../audio/useVideoEditorAudio";
+import type { PreviewQuality } from "../previewQuality";
 import type { useAppearanceState } from "../state/useAppearanceState";
 import type { useTimelineState } from "../state/useTimelineState";
 import type { CursorTelemetryPoint, ZoomRegion } from "../types";
@@ -38,6 +39,7 @@ type Props = {
 	setIsPlaying: Dispatch<SetStateAction<boolean>>;
 	setError: (message: string | null) => void;
 	handlers: Handlers;
+	previewQuality: PreviewQuality;
 };
 
 export function EditorVideoPreview({
@@ -61,6 +63,7 @@ export function EditorVideoPreview({
 	setIsPlaying,
 	setError,
 	handlers,
+	previewQuality,
 }: Props) {
 	return (
 		<VideoPlayback
@@ -94,6 +97,7 @@ export function EditorVideoPreview({
 			borderRadius={appearance.borderRadius}
 			padding={appearance.padding}
 			cropRegion={appearance.cropRegion}
+			previewQuality={previewQuality}
 			webcam={appearance.webcam}
 			webcamVideoPath={
 				appearance.webcam.sourcePath ? appearance.resolvedWebcamVideoUrl : null

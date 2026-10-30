@@ -187,6 +187,12 @@
 	"export": {
 		"processingAudioEdits": "Traitement de l’audio avec modifications de vitesse/superposition"
 	},
+	"previewQuality": {
+		"label": "Aperçu",
+		"full": "Complète",
+		"half": "1/2",
+		"quarter": "1/4"
+	},
 	"toolbar": {
 		"addLayer": "Ajouter une couche",
 		"splitClip": "Diviser le clip (C)"

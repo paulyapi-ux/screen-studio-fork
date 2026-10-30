@@ -43,6 +43,11 @@ import {
 	getCaptionWordVisualState,
 } from "./captionStyle";
 import {
+	DEFAULT_PREVIEW_QUALITY,
+	getPreviewResolution,
+	type PreviewQuality,
+} from "./previewQuality";
+import {
 	type AnnotationRegion,
 	type AutoCaptionSettings,
 	type CaptionCue,
@@ -100,6 +105,7 @@ import {
 	preloadCursorAssets,
 } from "./videoPlayback/cursorRenderer";
 import { clampFocusToStage as clampFocusToStageUtil } from "./videoPlayback/focusUtils";
+import { getFrameMotionSample } from "./videoPlayback/frameMotionSample";
 import { layoutVideoContent as layoutVideoContentUtil } from "./videoPlayback/layoutUtils";
 import { clamp01 } from "./videoPlayback/mathUtils";
 import {
@@ -111,19 +117,18 @@ import {
 } from "./videoPlayback/motionSmoothing";
 import { updateOverlayIndicator } from "./videoPlayback/overlayUtils";
 import { supportsPreviewPlaybackRate } from "./videoPlayback/playbackRate";
-import { getFrameMotionSample } from "./videoPlayback/frameMotionSample";
 import { PreviewVideoSource } from "./videoPlayback/previewVideoSource";
-import { usePreviewVideoReady } from "./videoPlayback/usePreviewVideoReady";
 import { getSceneEffectMetrics } from "./videoPlayback/sceneEffects";
 import {
 	resolvePreviewMotionMode,
 	resolveSceneZoomTarget,
 	shouldComposePreviewFrame,
 } from "./videoPlayback/sceneMotion";
+import { usePreviewVideoReady } from "./videoPlayback/usePreviewVideoReady";
 import {
 	getWebcamMediaTargetTimeSeconds,
-	isWebcamVisibleAtSourceTime,
 	isWebcamMediaSynchronized,
+	isWebcamVisibleAtSourceTime,
 	shouldSeekWebcamMedia,
 } from "./videoPlayback/webcamSync";
 import {
@@ -248,6 +253,8 @@ interface VideoPlaybackProps {
 	borderRadius?: number;
 	padding?: Padding | number;
 	cropRegion?: import("./types").CropRegion;
+	/** Editor preview sharpness (Complete, 1/2, 1/4). Does not change exports. */
+	previewQuality?: PreviewQuality;
 	webcam?: WebcamOverlaySettings;
 	webcamVideoPath?: string | null;
 	aspectRatio: AspectRatio;
@@ -334,6 +341,7 @@ const VideoPlayback = forwardRef<VideoPlaybackRef, VideoPlaybackProps>(
 			borderRadius = 0,
 			padding = DEFAULT_PADDING,
 			cropRegion,
+			previewQuality = DEFAULT_PREVIEW_QUALITY,
 			webcam,
 			webcamVideoPath,
 			aspectRatio,
@@ -477,6 +485,8 @@ const VideoPlayback = forwardRef<VideoPlaybackRef, VideoPlaybackProps>(
 			height: number;
 		} | null>(null);
 		const layoutVideoContentRef = useRef<(() => void) | null>(null);
+		const previewQualityRef = useRef(previewQuality);
+		previewQualityRef.current = previewQuality;
 		const lastWebcamSyncTimeRef = useRef<number | null>(null);
 		const lastBackgroundSyncTimeRef = useRef<number | null>(null);
 		const bgVideoRef = useRef<HTMLVideoElement | null>(null);
@@ -559,7 +569,10 @@ const VideoPlayback = forwardRef<VideoPlaybackRef, VideoPlaybackProps>(
 								backgroundAlpha: 0,
 								antialias: true,
 								failIfMajorPerformanceCaveat: false,
-								resolution: window.devicePixelRatio || 1,
+								resolution: getPreviewResolution(
+									window.devicePixelRatio,
+									previewQualityRef.current,
+								),
 								autoDensity: true,
 								preference: backend,
 								autoStart: true,
@@ -1086,6 +1099,17 @@ const VideoPlayback = forwardRef<VideoPlaybackRef, VideoPlaybackProps>(
 		useEffect(() => {
 			layoutVideoContentRef.current = layoutVideoContent;
 		}, [layoutVideoContent]);
+
+		// Redraw the preview at the chosen sharpness without rebuilding the renderer.
+		useEffect(() => {
+			const app = appRef.current;
+			const container = containerRef.current;
+			if (!pixiReady || !app || !container) return;
+			const resolution = getPreviewResolution(window.devicePixelRatio, previewQuality);
+			if (Math.abs(app.renderer.resolution - resolution) < 0.001) return;
+			app.renderer.resize(container.clientWidth, container.clientHeight, resolution);
+			layoutVideoContentRef.current?.();
+		}, [previewQuality, pixiReady]);
 
 		// Always re-run geometric layout when layout props change, even if frame sprite isn't reloaded.
 		useEffect(() => {

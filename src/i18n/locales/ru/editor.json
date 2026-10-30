@@ -187,6 +187,12 @@
 	"export": {
 		"processingAudioEdits": "Обработка звука (скорость, наложения)"
 	},
+	"previewQuality": {
+		"label": "Предпросмотр",
+		"full": "Полное",
+		"half": "1/2",
+		"quarter": "1/4"
+	},
 	"toolbar": {
 		"addLayer": "Добавить слой",
 		"splitClip": "Разрезать клип (C)"

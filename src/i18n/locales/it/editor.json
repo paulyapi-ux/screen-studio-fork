@@ -187,6 +187,12 @@
 	"export": {
 		"processingAudioEdits": "Elaborazione audio con modifiche di velocità/overlay"
 	},
+	"previewQuality": {
+		"label": "Anteprima",
+		"full": "Completa",
+		"half": "1/2",
+		"quarter": "1/4"
+	},
 	"toolbar": {
 		"addLayer": "Aggiungi livello",
 		"splitClip": "Dividi clip (C)"

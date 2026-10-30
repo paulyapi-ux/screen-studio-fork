@@ -1,5 +1,11 @@
-import { Skeleton } from "@/components/ui/skeleton";
-import { Slider } from "@/components/ui/slider";
+import { type Dispatch, type RefObject, type SetStateAction, useState } from "react";
+import { Button } from "@/components/ui/button";
+import {
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import {
 	CaretDown,
 	Check,
@@ -16,15 +22,10 @@ import {
 	SpeakerLow,
 	SpeakerX,
 } from "@/components/ui/icons";
-import type { Dispatch, RefObject, SetStateAction } from "react";
-import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import {
-	DropdownMenu,
-	DropdownMenuContent,
-	DropdownMenuItem,
-	DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Slider } from "@/components/ui/slider";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import type { useI18n } from "@/contexts/I18nContext";
 import { ASPECT_RATIOS, type AspectRatio, getAspectRatioLabel } from "@/utils/aspectRatioUtils";
 import type { useVideoEditorAudio } from "../audio/useVideoEditorAudio";
@@ -33,6 +34,12 @@ import type { useAnnotationRegionCommands } from "../hooks/useAnnotationRegionCo
 import type { useEditorPlaybackControls } from "../hooks/useEditorPlaybackControls";
 import type { useTimelineProjection } from "../hooks/useTimelineProjection";
 import type { useZoomRegionCommands } from "../hooks/useZoomRegionCommands";
+import {
+	loadPreviewQuality,
+	normalizePreviewQuality,
+	PREVIEW_QUALITIES,
+	savePreviewQuality,
+} from "../previewQuality";
 import type { useAppearanceState } from "../state/useAppearanceState";
 import type { useTimelineState } from "../state/useTimelineState";
 import type { TimelineEditorHandle } from "../timeline/TimelineEditor";
@@ -116,6 +123,8 @@ export function EditorPreviewPanel(props: Props) {
 		setIsPlaying,
 		setError,
 	} = props;
+
+	const [previewQuality, setPreviewQuality] = useState(loadPreviewQuality);
 
 	return (
 		<div className="flex min-h-0 min-w-0 flex-1 flex-col">
@@ -209,6 +218,7 @@ export function EditorPreviewPanel(props: Props) {
 									setCurrentTime={setCurrentTime}
 									setIsPlaying={setIsPlaying}
 									setError={setError}
+									previewQuality={previewQuality}
 									handlers={{
 										onSelectZoom: zoomCommands.handleSelectZoom,
 										onZoomFocusChange: zoomCommands.handleZoomFocusChange,
@@ -222,6 +232,29 @@ export function EditorPreviewPanel(props: Props) {
 								/>
 							</div>
 						</div>
+					</div>
+					<div className="flex h-9 shrink-0 items-center justify-center gap-2">
+						<span className="text-xs text-muted-foreground">
+							{t("editor.previewQuality.label")}
+						</span>
+						<ToggleGroup
+							type="single"
+							size="sm"
+							value={previewQuality}
+							aria-label={t("editor.previewQuality.label")}
+							onValueChange={(value) => {
+								if (!value) return;
+								const next = normalizePreviewQuality(value);
+								setPreviewQuality(next);
+								savePreviewQuality(next);
+							}}
+						>
+							{PREVIEW_QUALITIES.map((quality) => (
+								<ToggleGroupItem key={quality} value={quality}>
+									{t(`editor.previewQuality.${quality}`)}
+								</ToggleGroupItem>
+							))}
+						</ToggleGroup>
 					</div>
 				</div>
 			</div>

@@ -188,6 +188,12 @@
 	"export": {
 		"processingAudioEdits": "속도/오버레이 편집으로 오디오 처리 중"
 	},
+	"previewQuality": {
+		"label": "미리보기",
+		"full": "전체",
+		"half": "1/2",
+		"quarter": "1/4"
+	},
 	"toolbar": {
 		"addLayer": "레이어 추가",
 		"splitClip": "클립 분할 (C)"

@@ -187,6 +187,12 @@
 	"export": {
 		"processingAudioEdits": "Procesando audio con ediciones de velocidad/superposición"
 	},
+	"previewQuality": {
+		"label": "Vista previa",
+		"full": "Completa",
+		"half": "1/2",
+		"quarter": "1/4"
+	},
 	"toolbar": {
 		"addLayer": "Agregar capa",
 		"splitClip": "Dividir clip (C)"
