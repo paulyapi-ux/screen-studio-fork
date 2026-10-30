@@ -1,6 +1,3 @@
-import { resolveDisplayMediaSource } from "./ipc/register/sourceMapping";
-import { createSaveBeforeCloseController } from "./saveBeforeClose";
-import { clearRecordingTrashUndo } from "./ipc/recording/library";
 import fs from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
@@ -13,6 +10,7 @@ import {
 	ipcMain,
 	Menu,
 	nativeImage,
+	screen,
 	session,
 	shell,
 	systemPreferences,
@@ -29,10 +27,15 @@ import {
 	killWindowsCaptureProcess,
 	registerIpcHandlers,
 } from "./ipc/handlers";
+import { getWindowsCaptureExePath } from "./ipc/paths/binaries";
+import { startHardwareEncoderProbe } from "./ipc/recording/encoderProbe";
+import { clearRecordingTrashUndo } from "./ipc/recording/library";
+import { resolveDisplayMediaSource } from "./ipc/register/sourceMapping";
 import { ensureMediaServer } from "./mediaServer";
 import { hardenWebContentsNavigation, shouldHardenWebContentsType } from "./navigationPolicy";
 import { shouldGrantDisplayCapture, shouldGrantMediaPermission } from "./permissionPolicy";
 import { ensurePackagedRendererServer, getPackagedRendererBaseUrl } from "./rendererServer";
+import { createSaveBeforeCloseController } from "./saveBeforeClose";
 import {
 	checkForAppUpdates,
 	deferUpdateReminder,
@@ -50,6 +53,7 @@ import {
 	skipAvailableUpdateVersion,
 } from "./updater";
 import {
+	beginHudCaptureProtection,
 	createEditorWindow,
 	createHudOverlayWindow,
 	createSourceSelectorWindow,
@@ -57,7 +61,6 @@ import {
 	getUpdateToastWindow,
 	hideUpdateToastWindow,
 	isHudOverlayMousePassthroughSupported,
-	beginHudCaptureProtection,
 	reassertHudOverlayMousePassthrough as reassertHudOverlayMouseState,
 	setHudOverlayRecordingActive,
 	showUpdateToastWindow,
@@ -920,6 +923,15 @@ app.whenReady().then(async () => {
 
 	if (process.platform === "win32") {
 		app.setAppUserModelId("dev.recordly.app");
+
+		// Test the hardware H.264 encoder in the background so that pressing Record never waits
+		// for it. The result is handed to each recording (see encoderProbe.ts).
+		const primary = screen.getPrimaryDisplay();
+		void startHardwareEncoderProbe({
+			exePath: getWindowsCaptureExePath(),
+			width: Math.round(primary.size.width * primary.scaleFactor),
+			height: Math.round(primary.size.height * primary.scaleFactor),
+		}).catch((error) => console.warn("[encoder-probe] failed:", error));
 	}
 
 	session.defaultSession.setPermissionCheckHandler(

@@ -14,6 +14,7 @@
 #include <condition_variable>
 #include <chrono>
 #include <cstdio>
+#include <cstdlib>
 #include <fstream>
 
 static std::atomic<bool> g_stopRequested{false};
@@ -50,6 +51,11 @@ struct CaptureConfig {
     bool hasDisplayBounds = false;
     bool captureSystemAudio = false;
     bool captureMic = false;
+    // Result of the hardware-encoder trial run at app start-up (1 yes, 0 no, -1 unknown) and
+    // the frame size it was run at. A capture larger than that size does its own trial.
+    int hardwareEncoder = -1;
+    int hardwareProbeWidth = 0;
+    int hardwareProbeHeight = 0;
 };
 
 static bool parseSimpleJson(const std::string& json, CaptureConfig& config) {
@@ -125,6 +131,13 @@ static bool parseSimpleJson(const std::string& json, CaptureConfig& config) {
 
     int height = findInt("height");
     if (height > 0) config.height = height;
+
+    int hardwareEncoder = findInt("hardwareEncoder");
+    if (hardwareEncoder == 0 || hardwareEncoder == 1) config.hardwareEncoder = hardwareEncoder;
+    int hardwareProbeWidth = findInt("hardwareProbeWidth");
+    if (hardwareProbeWidth > 0) config.hardwareProbeWidth = hardwareProbeWidth;
+    int hardwareProbeHeight = findInt("hardwareProbeHeight");
+    if (hardwareProbeHeight > 0) config.hardwareProbeHeight = hardwareProbeHeight;
 
     config.audioOutputPath = findString("audioOutputPath");
     config.micOutputPath = findString("micOutputPath");
@@ -284,7 +297,30 @@ static void stdinListenerThread() {
     g_stopCv.notify_all();
 }
 
+// `wgc-capture.exe --probe-encoder <width> <height> <fps>`: tests the hardware encoder and prints
+// one JSON line, e.g. {"hardware":true,"ms":180}. Used once at app start-up.
+static int runEncoderProbe(int argc, char* argv[]) {
+    if (argc < 5) return 1;
+    const int width = std::atoi(argv[2]);
+    const int height = std::atoi(argv[3]);
+    const int fps = std::atoi(argv[4]);
+
+    CoInitializeEx(nullptr, COINIT_MULTITHREADED);
+
+    int64_t elapsedMs = 0;
+    const bool works = MFEncoder::probeHardwareEncoder(width, height, fps, elapsedMs);
+    std::cout << "{\"hardware\":" << (works ? "true" : "false") << ",\"ms\":" << elapsedMs << "}" << std::endl;
+    std::cout.flush();
+    // Leave right away: a stuck encoder must not be able to block the exit.
+    ExitProcess(0);
+    return 0;
+}
+
 int main(int argc, char* argv[]) {
+    if (argc >= 2 && std::string(argv[1]) == "--probe-encoder") {
+        return runEncoderProbe(argc, argv);
+    }
+
     if (argc < 2) {
         std::cerr << "ERROR: Missing JSON config argument" << std::endl;
         return 1;
@@ -342,8 +378,14 @@ int main(int argc, char* argv[]) {
     // Initialize encoder
     MFEncoder encoder;
     std::wstring outputPathW = utf8ToWide(config.outputPath);
+    // Reuse the start-up trial only if it ran at least at this frame size.
+    const bool verdictApplies =
+        config.hardwareEncoder >= 0 &&
+        static_cast<int64_t>(captureWidth) * captureHeight <=
+            static_cast<int64_t>(config.hardwareProbeWidth) * config.hardwareProbeHeight;
     if (!encoder.initialize(outputPathW, captureWidth, captureHeight, config.fps,
-                           session.device(), session.context())) {
+                           session.device(), session.context(),
+                           verdictApplies ? config.hardwareEncoder : -1)) {
         std::cerr << "ERROR: Failed to initialize Media Foundation encoder" << std::endl;
         return 1;
     }

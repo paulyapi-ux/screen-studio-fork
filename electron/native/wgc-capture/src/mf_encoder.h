@@ -17,8 +17,15 @@ public:
     MFEncoder();
     ~MFEncoder();
 
+    // hardwareVerdict: 1 = the hardware encoder is known to work (skip the trial), 0 = known not
+    // to work (go straight to the software encoder), -1 = unknown (run the trial now).
     bool initialize(const std::wstring& outputPath, int width, int height, int fps,
-                    ID3D11Device* device, ID3D11DeviceContext* context);
+                    ID3D11Device* device, ID3D11DeviceContext* context,
+                    int hardwareVerdict = -1);
+
+    // Runs the hardware encoder trial on its own (used by `--probe-encoder` at app start-up).
+    // Never calls MFShutdown: a stuck encoder could block it, and the process exits right after.
+    static bool probeHardwareEncoder(int width, int height, int fps, int64_t& elapsedMs);
     bool writeFrame(ID3D11Texture2D* texture, int64_t timestampHns);
     bool extendLastFrameTo(int64_t timestampHns);
     bool finalize();
@@ -30,7 +37,7 @@ private:
     bool writeNv12SampleLocked(const std::vector<uint8_t>& frameBuffer, int64_t timestampHns);
     bool createSinkWriter(const std::wstring& outputPath, bool hardware,
                           ComPtr<IMFSinkWriter>& writer, DWORD& streamIndex);
-    bool hardwareEncoderResponds(const std::wstring& outputPath);
+    bool hardwareEncoderResponds();
 
     ComPtr<IMFSinkWriter> sinkWriter_;
     ID3D11Device* device_ = nullptr;

@@ -73,7 +73,8 @@ MFEncoder::~MFEncoder() {
 }
 
 bool MFEncoder::initialize(const std::wstring& outputPath, int width, int height, int fps,
-                           ID3D11Device* device, ID3D11DeviceContext* context) {
+                           ID3D11Device* device, ID3D11DeviceContext* context,
+                           int hardwareVerdict) {
     std::lock_guard<std::mutex> lock(mutex_);
 
     if (initialized_) return false;
@@ -103,7 +104,11 @@ bool MFEncoder::initialize(const std::wstring& outputPath, int width, int height
     // Try the GPU encoder first. Some machines accept frames but never produce any (seen with an
     // AMD RX 9070 XT), which would hang the recording; then fall back to Microsoft's software
     // H.264 encoder. Silent on purpose: this is an exceptional case.
-    usingHardware_ = hardwareEncoderResponds(outputPath);
+    if (hardwareVerdict >= 0) {
+        usingHardware_ = hardwareVerdict == 1;  // already tested at app start-up: no waiting here
+    } else {
+        usingHardware_ = hardwareEncoderResponds();
+    }
     if (!usingHardware_) {
         std::cerr << "Encoder: hardware H.264 unavailable, using the software encoder" << std::endl;
     } else {
@@ -239,7 +244,7 @@ bool MFEncoder::createSinkWriter(const std::wstring& outputPath, bool hardware,
 
 // Sends a few test frames to a throwaway hardware-encoder writer and checks that it produces
 // output. A healthy encoder answers within a fraction of a second; a stuck one never does.
-bool MFEncoder::hardwareEncoderResponds(const std::wstring& /*outputPath*/) {
+bool MFEncoder::hardwareEncoderResponds() {
     // Test hook: pretend the hardware encoder is unavailable.
     char forced[8] = {};
     if (GetEnvironmentVariableA("SCREEN_STUDIO_FORCE_SOFTWARE_ENCODER", forced, sizeof(forced)) > 0 &&
@@ -299,6 +304,24 @@ bool MFEncoder::hardwareEncoderResponds(const std::wstring& /*outputPath*/) {
     }
     DeleteFileW(probePath.c_str());
     return works;
+}
+
+bool MFEncoder::probeHardwareEncoder(int width, int height, int fps, int64_t& elapsedMs) {
+    elapsedMs = 0;
+    if (width <= 0 || height <= 0 || fps <= 0) return false;
+
+    MFEncoder encoder;
+    encoder.width_ = width - (width % 2);
+    encoder.height_ = height - (height % 2);
+    encoder.fps_ = fps;
+
+    const HRESULT hr = MFStartup(MF_VERSION);
+    if (FAILED(hr)) return false;
+
+    const ULONGLONG started = GetTickCount64();
+    const bool works = encoder.hardwareEncoderResponds();
+    elapsedMs = static_cast<int64_t>(GetTickCount64() - started);
+    return works;  // no MFShutdown on purpose, see the header
 }
 
 bool MFEncoder::writeFrame(ID3D11Texture2D* texture, int64_t timestampHns) {

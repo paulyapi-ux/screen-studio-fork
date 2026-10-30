@@ -62,6 +62,7 @@ import {
 	validateRecordedVideo,
 	writeRecordingDiagnosticsSnapshot,
 } from "../recording/diagnostics";
+import { applyHardwareEncoderVerdict } from "../recording/encoderProbe";
 import {
 	buildFfmpegCaptureArgs,
 	waitForFfmpegCaptureStart,
@@ -88,6 +89,7 @@ import {
 	shouldStartWindowsBrowserMicrophoneFallback,
 	shouldUseWindowsBrowserMicrophoneFallback,
 } from "../recording/windowsFallbacks";
+import { getSourceArea } from "../sourceArea";
 import {
 	cachedSystemCursorAssets,
 	cachedSystemCursorAssetsSourceMtimeMs,
@@ -157,7 +159,6 @@ import {
 	parseWindowId,
 } from "../utils";
 import { resolveWindowsCaptureTarget } from "../windowsCaptureSelection";
-import { getSourceArea } from "../sourceArea";
 import { bringSelectedWindowForward } from "./sources";
 
 const execFileAsync = promisify(execFile);
@@ -475,6 +476,7 @@ export function registerRecordingHandlers(
 						outputPath: tempVideoPath,
 						fps: 60,
 					};
+					applyHardwareEncoderVerdict(config);
 
 					if (captureTarget.kind === "invalid-window") {
 						return {
