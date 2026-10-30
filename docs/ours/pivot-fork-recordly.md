@@ -75,6 +75,8 @@ Essai de l'encodeur matériel avant chaque enregistrement, bascule automatique v
 
 - **Fait (étape 1)** : le niveau d'aperçu règle la finesse du moteur graphique (écran, curseur, effets). La webcam, les sous-titres et les annotations sont des éléments de page, donc restent nets : **voulu**, validé le 30/10/2026 (flouter la webcam n'allégerait rien).
 
+- **Écrit (étape 2), non compilé ici** : `electron/native/wgc-capture/src/mf_encoder.cpp` essaie l'encodeur matériel avec 12 images de test (fichier jetable dans le dossier temporaire), puis bascule sur l'encodeur logiciel de Windows s'il ne produit rien en 3 s. La ligne `Encoder: hardware H.264` ou `Encoder: hardware H.264 unavailable, using the software encoder` apparaît dans la sortie de la capture. Variable de test : `SCREEN_STUDIO_FORCE_SOFTWARE_ENCODER=1` simule l'échec du matériel. À compiler et tester sur le PC Windows.
+
 ## Ordre de construction (validé le 27/10/2026, rien n'est commencé)
 1. Qualité d'aperçu. 2. Secours d'encodeur Windows (à tester sur le PC). 3. Raccourcis globaux + retour visuel. 4. Frappe et zoom.
 5. Composition libre, en quatre sous-étapes : cadre libre de l'écran, webcam déplaçable, grille + magnétisme + cadenas, compositions sauvegardées.

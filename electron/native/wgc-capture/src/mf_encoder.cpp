@@ -32,6 +32,40 @@ static UINT32 calculateScreenRecordingBitrate(int width, int height, int fps) {
     return static_cast<UINT32>(static_cast<double>(baseBitrate) * boost + 0.5);
 }
 
+// Hands one NV12 frame to a sink writer.
+static bool submitNv12Sample(IMFSinkWriter* writer, DWORD streamIndex,
+                             const std::vector<uint8_t>& frameBuffer,
+                             int64_t timestampHns, int64_t durationHns) {
+    if (!writer || frameBuffer.empty()) return false;
+
+    const DWORD bufferSize = static_cast<DWORD>(frameBuffer.size());
+    ComPtr<IMFMediaBuffer> buffer;
+    HRESULT hr = MFCreateMemoryBuffer(bufferSize, &buffer);
+    if (FAILED(hr)) return false;
+
+    BYTE* bufferData = nullptr;
+    hr = buffer->Lock(&bufferData, nullptr, nullptr);
+    if (FAILED(hr)) return false;
+
+    std::memcpy(bufferData, frameBuffer.data(), bufferSize);
+    buffer->Unlock();
+    buffer->SetCurrentLength(bufferSize);
+
+    ComPtr<IMFSample> sample;
+    hr = MFCreateSample(&sample);
+    if (FAILED(hr)) return false;
+
+    sample->AddBuffer(buffer.Get());
+    sample->SetSampleTime(timestampHns);
+    sample->SetSampleDuration(durationHns);
+
+    hr = writer->WriteSample(streamIndex, sample.Get());
+    if (FAILED(hr)) {
+        std::cerr << "ERROR: WriteSample failed: 0x" << std::hex << hr << std::endl;
+    }
+    return SUCCEEDED(hr);
+}
+
 MFEncoder::MFEncoder() {}
 
 MFEncoder::~MFEncoder() {
@@ -66,66 +100,16 @@ bool MFEncoder::initialize(const std::wstring& outputPath, int width, int height
         return false;
     }
 
-    // Output media type (H.264)
-    ComPtr<IMFMediaType> outputType;
-    hr = MFCreateMediaType(&outputType);
-    if (FAILED(hr)) return false;
-
-    outputType->SetGUID(MF_MT_MAJOR_TYPE, MFMediaType_Video);
-    outputType->SetGUID(MF_MT_SUBTYPE, MFVideoFormat_H264);
-    const UINT32 videoBitrate = calculateScreenRecordingBitrate(width_, height_, fps_);
-    outputType->SetUINT32(MF_MT_AVG_BITRATE, videoBitrate);
-    MFSetAttributeSize(outputType.Get(), MF_MT_FRAME_SIZE, width_, height_);
-    MFSetAttributeRatio(outputType.Get(), MF_MT_FRAME_RATE, fps_, 1);
-    MFSetAttributeRatio(outputType.Get(), MF_MT_PIXEL_ASPECT_RATIO, 1, 1);
-    outputType->SetUINT32(MF_MT_INTERLACE_MODE, MFVideoInterlace_Progressive);
-    hr = setBt709LimitedVideoAttributes(outputType.Get());
-    if (FAILED(hr)) return false;
-    std::cerr << "Encoder bitrate: " << videoBitrate << " bps for "
-              << width_ << "x" << height_ << "@" << fps_ << "fps" << std::endl;
-
-    // Input media type (NV12)
-    ComPtr<IMFMediaType> inputType;
-    hr = MFCreateMediaType(&inputType);
-    if (FAILED(hr)) return false;
-
-    inputType->SetGUID(MF_MT_MAJOR_TYPE, MFMediaType_Video);
-    inputType->SetGUID(MF_MT_SUBTYPE, MFVideoFormat_NV12);
-    MFSetAttributeSize(inputType.Get(), MF_MT_FRAME_SIZE, width_, height_);
-    MFSetAttributeRatio(inputType.Get(), MF_MT_FRAME_RATE, fps_, 1);
-    MFSetAttributeRatio(inputType.Get(), MF_MT_PIXEL_ASPECT_RATIO, 1, 1);
-    inputType->SetUINT32(MF_MT_INTERLACE_MODE, MFVideoInterlace_Progressive);
-    hr = setBt709LimitedVideoAttributes(inputType.Get());
-    if (FAILED(hr)) return false;
-
-    // Create SinkWriter with MPEG4 container
-    ComPtr<IMFAttributes> writerAttrs;
-    hr = MFCreateAttributes(&writerAttrs, 1);
-    if (FAILED(hr)) return false;
-
-    writerAttrs->SetUINT32(MF_READWRITE_ENABLE_HARDWARE_TRANSFORMS, TRUE);
-
-    hr = MFCreateSinkWriterFromURL(outputPath.c_str(), nullptr, writerAttrs.Get(), &sinkWriter_);
-    if (FAILED(hr)) {
-        std::cerr << "ERROR: MFCreateSinkWriterFromURL failed: 0x" << std::hex << hr << std::endl;
-        return false;
+    // Try the GPU encoder first. Some machines accept frames but never produce any (seen with an
+    // AMD RX 9070 XT), which would hang the recording; then fall back to Microsoft's software
+    // H.264 encoder. Silent on purpose: this is an exceptional case.
+    usingHardware_ = hardwareEncoderResponds(outputPath);
+    if (!usingHardware_) {
+        std::cerr << "Encoder: hardware H.264 unavailable, using the software encoder" << std::endl;
+    } else {
+        std::cerr << "Encoder: hardware H.264" << std::endl;
     }
-
-    hr = sinkWriter_->AddStream(outputType.Get(), &streamIndex_);
-    if (FAILED(hr)) {
-        std::cerr << "ERROR: AddStream failed: 0x" << std::hex << hr << std::endl;
-        return false;
-    }
-
-    hr = sinkWriter_->SetInputMediaType(streamIndex_, inputType.Get(), nullptr);
-    if (FAILED(hr)) {
-        std::cerr << "ERROR: SetInputMediaType failed: 0x" << std::hex << hr << std::endl;
-        return false;
-    }
-
-    hr = sinkWriter_->BeginWriting();
-    if (FAILED(hr)) {
-        std::cerr << "ERROR: BeginWriting failed: 0x" << std::hex << hr << std::endl;
+    if (!createSinkWriter(outputPath, usingHardware_, sinkWriter_, streamIndex_)) {
         return false;
     }
 
@@ -181,6 +165,140 @@ bool MFEncoder::initialize(const std::wstring& outputPath, int width, int height
 
     initialized_ = true;
     return true;
+}
+
+bool MFEncoder::createSinkWriter(const std::wstring& outputPath, bool hardware,
+                                 ComPtr<IMFSinkWriter>& writer, DWORD& streamIndex) {
+    // Output media type (H.264)
+    ComPtr<IMFMediaType> outputType;
+    HRESULT hr = MFCreateMediaType(&outputType);
+    if (FAILED(hr)) return false;
+
+    outputType->SetGUID(MF_MT_MAJOR_TYPE, MFMediaType_Video);
+    outputType->SetGUID(MF_MT_SUBTYPE, MFVideoFormat_H264);
+    const UINT32 videoBitrate = calculateScreenRecordingBitrate(width_, height_, fps_);
+    outputType->SetUINT32(MF_MT_AVG_BITRATE, videoBitrate);
+    MFSetAttributeSize(outputType.Get(), MF_MT_FRAME_SIZE, width_, height_);
+    MFSetAttributeRatio(outputType.Get(), MF_MT_FRAME_RATE, fps_, 1);
+    MFSetAttributeRatio(outputType.Get(), MF_MT_PIXEL_ASPECT_RATIO, 1, 1);
+    outputType->SetUINT32(MF_MT_INTERLACE_MODE, MFVideoInterlace_Progressive);
+    hr = setBt709LimitedVideoAttributes(outputType.Get());
+    if (FAILED(hr)) return false;
+    if (hardware) {
+        std::cerr << "Encoder bitrate: " << videoBitrate << " bps for "
+                  << width_ << "x" << height_ << "@" << fps_ << "fps" << std::endl;
+    }
+
+    // Input media type (NV12)
+    ComPtr<IMFMediaType> inputType;
+    hr = MFCreateMediaType(&inputType);
+    if (FAILED(hr)) return false;
+
+    inputType->SetGUID(MF_MT_MAJOR_TYPE, MFMediaType_Video);
+    inputType->SetGUID(MF_MT_SUBTYPE, MFVideoFormat_NV12);
+    MFSetAttributeSize(inputType.Get(), MF_MT_FRAME_SIZE, width_, height_);
+    MFSetAttributeRatio(inputType.Get(), MF_MT_FRAME_RATE, fps_, 1);
+    MFSetAttributeRatio(inputType.Get(), MF_MT_PIXEL_ASPECT_RATIO, 1, 1);
+    inputType->SetUINT32(MF_MT_INTERLACE_MODE, MFVideoInterlace_Progressive);
+    hr = setBt709LimitedVideoAttributes(inputType.Get());
+    if (FAILED(hr)) return false;
+
+    // Create SinkWriter with MPEG4 container
+    ComPtr<IMFAttributes> writerAttrs;
+    hr = MFCreateAttributes(&writerAttrs, 1);
+    if (FAILED(hr)) return false;
+
+    writerAttrs->SetUINT32(MF_READWRITE_ENABLE_HARDWARE_TRANSFORMS, hardware ? TRUE : FALSE);
+
+    hr = MFCreateSinkWriterFromURL(outputPath.c_str(), nullptr, writerAttrs.Get(), &writer);
+    if (FAILED(hr)) {
+        std::cerr << "ERROR: MFCreateSinkWriterFromURL failed: 0x" << std::hex << hr << std::endl;
+        return false;
+    }
+
+    hr = writer->AddStream(outputType.Get(), &streamIndex);
+    if (FAILED(hr)) {
+        std::cerr << "ERROR: AddStream failed: 0x" << std::hex << hr << std::endl;
+        return false;
+    }
+
+    hr = writer->SetInputMediaType(streamIndex, inputType.Get(), nullptr);
+    if (FAILED(hr)) {
+        std::cerr << "ERROR: SetInputMediaType failed: 0x" << std::hex << hr << std::endl;
+        return false;
+    }
+
+    hr = writer->BeginWriting();
+    if (FAILED(hr)) {
+        std::cerr << "ERROR: BeginWriting failed: 0x" << std::hex << hr << std::endl;
+        return false;
+    }
+
+    return true;
+}
+
+// Sends a few test frames to a throwaway hardware-encoder writer and checks that it produces
+// output. A healthy encoder answers within a fraction of a second; a stuck one never does.
+bool MFEncoder::hardwareEncoderResponds(const std::wstring& /*outputPath*/) {
+    // Test hook: pretend the hardware encoder is unavailable.
+    char forced[8] = {};
+    if (GetEnvironmentVariableA("SCREEN_STUDIO_FORCE_SOFTWARE_ENCODER", forced, sizeof(forced)) > 0 &&
+        forced[0] == '1') {
+        return false;
+    }
+
+    constexpr int kTrialFrames = 12;
+    constexpr DWORD kTrialTimeoutMs = 3000;
+    constexpr DWORD kPollIntervalMs = 20;
+
+    // Throwaway file in the temp folder, so a stuck encoder never leaves debris next to the recording.
+    wchar_t tempDir[MAX_PATH] = {};
+    const DWORD tempLen = GetTempPathW(MAX_PATH, tempDir);
+    const std::wstring probePath =
+        std::wstring(tempLen > 0 && tempLen < MAX_PATH ? tempDir : L".\\") +
+        L"screen-studio-hwprobe-" + std::to_wstring(GetCurrentProcessId()) + L".mp4";
+    ComPtr<IMFSinkWriter> probeWriter;
+    DWORD probeStream = 0;
+    if (!createSinkWriter(probePath, true, probeWriter, probeStream)) {
+        DeleteFileW(probePath.c_str());
+        return false;
+    }
+
+    // Mid-gray NV12 test frame.
+    const size_t ySize = static_cast<size_t>(width_) * static_cast<size_t>(height_);
+    std::vector<uint8_t> frame(ySize + ySize / 2, 128);
+    std::fill(frame.begin(), frame.begin() + ySize, 96);
+
+    const int64_t frameDurationHns = 10000000LL / fps_;
+    for (int i = 0; i < kTrialFrames; ++i) {
+        if (!submitNv12Sample(probeWriter.Get(), probeStream, frame, i * frameDurationHns, frameDurationHns)) {
+            (void)probeWriter.Detach();  // do not risk a blocking release of a misbehaving writer
+            DeleteFileW(probePath.c_str());
+            return false;
+        }
+    }
+
+    bool works = false;
+    for (DWORD waited = 0; waited < kTrialTimeoutMs; waited += kPollIntervalMs) {
+        MF_SINK_WRITER_STATISTICS stats = {};
+        stats.cb = sizeof(stats);
+        if (SUCCEEDED(probeWriter->GetStatistics(probeStream, &stats)) && stats.qwNumSamplesEncoded > 0) {
+            works = true;
+            break;
+        }
+        Sleep(kPollIntervalMs);
+    }
+
+    if (works) {
+        probeWriter->Finalize();
+        probeWriter.Reset();
+    } else {
+        // A stuck encoder can also block its own shutdown: leave it alone and let the process
+        // end clean it up instead of risking a hang of the whole recording.
+        (void)probeWriter.Detach();
+    }
+    DeleteFileW(probePath.c_str());
+    return works;
 }
 
 bool MFEncoder::writeFrame(ID3D11Texture2D* texture, int64_t timestampHns) {
@@ -316,33 +434,7 @@ bool MFEncoder::writeNv12SampleLocked(const std::vector<uint8_t>& frameBuffer, i
     const int64_t frameDurationHns = 10000000LL / fps_;
     if (frameDurationHns <= 0) return false;
 
-    // Create MF sample
-    DWORD bufferSize = static_cast<DWORD>(frameBuffer.size());
-    ComPtr<IMFMediaBuffer> buffer;
-    HRESULT hr = MFCreateMemoryBuffer(bufferSize, &buffer);
-    if (FAILED(hr)) return false;
-
-    BYTE* bufferData = nullptr;
-    hr = buffer->Lock(&bufferData, nullptr, nullptr);
-    if (FAILED(hr)) return false;
-
-    std::memcpy(bufferData, frameBuffer.data(), bufferSize);
-    buffer->Unlock();
-    buffer->SetCurrentLength(bufferSize);
-
-    ComPtr<IMFSample> sample;
-    hr = MFCreateSample(&sample);
-    if (FAILED(hr)) return false;
-
-    sample->AddBuffer(buffer.Get());
-    sample->SetSampleTime(timestampHns);
-    sample->SetSampleDuration(frameDurationHns);
-
-    hr = sinkWriter_->WriteSample(streamIndex_, sample.Get());
-    if (FAILED(hr)) {
-        std::cerr << "ERROR: WriteSample failed: 0x" << std::hex << hr << std::endl;
-    }
-    return SUCCEEDED(hr);
+    return submitNv12Sample(sinkWriter_.Get(), streamIndex_, frameBuffer, timestampHns, frameDurationHns);
 }
 
 bool MFEncoder::finalize() {
