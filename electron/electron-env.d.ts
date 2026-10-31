@@ -867,6 +867,10 @@ interface Window {
 		resumeRecordingShortcuts: () => Promise<void>;
 		getRecordingShortcuts: () => Promise<{
 			config: import("../src/lib/recordingShortcuts").RecordingShortcutsConfig;
+			registered: Record<
+				import("../src/lib/recordingShortcuts").RecordingShortcutAction,
+				boolean
+			> | null;
 		}>;
 		saveRecordingShortcuts: (
 			config: import("../src/lib/recordingShortcuts").RecordingShortcutsConfig,

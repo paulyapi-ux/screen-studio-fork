@@ -17,7 +17,7 @@ export type RecordingShortcutsConfig = Record<RecordingShortcutAction, ShortcutB
 export const DEFAULT_RECORDING_SHORTCUTS: RecordingShortcutsConfig = {
 	toggleRecording: { key: "r", ctrl: true, shift: true },
 	pauseResume: { key: "p", ctrl: true, shift: true },
-	restartRecording: { key: "x", ctrl: true, shift: true },
+	restartRecording: { key: "r", ctrl: true, alt: true },
 };
 
 export const RECORDING_SHORTCUT_LABELS: Record<RecordingShortcutAction, string> = {

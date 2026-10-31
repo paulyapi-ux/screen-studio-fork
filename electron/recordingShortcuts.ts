@@ -21,6 +21,7 @@ export interface GlobalShortcutApi {
 
 let registeredAccelerators: string[] = [];
 let currentConfig: RecordingShortcutsConfig | null = null;
+let lastRegistration: RecordingShortcutRegistration | null = null;
 
 function dispatchToWindows(action: RecordingShortcutAction) {
 	console.log(`[shortcuts] pressed: ${action}`);
@@ -74,7 +75,13 @@ export function applyRecordingShortcuts(
 			);
 		report[action] = registered;
 	}
+	lastRegistration = report;
 	return report;
+}
+
+/** What the system accepted the last time the shortcuts were applied (null before the first time). */
+export function getLastRecordingShortcutRegistration(): RecordingShortcutRegistration | null {
+	return lastRegistration;
 }
 
 /** Releases the system-wide shortcuts while the shortcuts menu is open, so that pressing a

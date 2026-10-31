@@ -4,6 +4,7 @@ import { hasAppSetting, readAppSettingsStore, writeAppSettingsStore } from "../.
 import { createCountdownController } from "../../countdownController";
 import { hideCursor } from "../../cursorHider";
 import {
+	getLastRecordingShortcutRegistration,
 	getRecordingShortcutsConfig,
 	resumeRecordingShortcuts,
 	saveRecordingShortcuts,
@@ -48,6 +49,7 @@ function getBrowserMicrophoneProfileFromEnv() {
 export function registerSettingsHandlers() {
 	ipcMain.handle("recording-shortcuts:get", () => ({
 		config: getRecordingShortcutsConfig(),
+		registered: getLastRecordingShortcutRegistration(),
 	}));
 	ipcMain.handle("recording-shortcuts:suspend", () => suspendRecordingShortcuts());
 	ipcMain.handle("recording-shortcuts:resume", () => resumeRecordingShortcuts());

@@ -51,6 +51,7 @@ export function ShortcutsConfigDialog() {
 	const [recordingDraft, setRecordingDraft] = useState<RecordingShortcutsConfig>(
 		DEFAULT_RECORDING_SHORTCUTS,
 	);
+	const [unavailable, setUnavailable] = useState<RecordingShortcutAction[]>([]);
 	const [recordingCaptureFor, setRecordingCaptureFor] = useState<RecordingShortcutAction | null>(
 		null,
 	);
@@ -65,6 +66,11 @@ export function ShortcutsConfigDialog() {
 				?.getRecordingShortcuts?.()
 				.then((result) => {
 					if (result?.config) setRecordingDraft(result.config);
+					setUnavailable(
+						RECORDING_SHORTCUT_ACTIONS.filter(
+							(action) => result?.registered?.[action] === false,
+						),
+					);
 				})
 				.catch(() => undefined);
 		}
@@ -117,6 +123,7 @@ export function ShortcutsConfigDialog() {
 				return;
 			}
 			setRecordingDraft((prev) => ({ ...prev, [action]: binding }));
+			setUnavailable((prev) => prev.filter((item) => item !== action));
 		};
 
 		window.addEventListener("keydown", handleCapture, { capture: true });
@@ -235,39 +242,45 @@ export function ShortcutsConfigDialog() {
 							const isCapturing = recordingCaptureFor === action;
 							const label = t(`shortcutsConfig.recordingActions.${action}`);
 							return (
-								<div
-									key={action}
-									className="flex items-center justify-between gap-4 border-b border-separator py-3"
-								>
-									<span className="text-[13px] text-foreground">{label}</span>
-									<Button
-										type="button"
-										variant="secondary"
-										size="sm"
-										aria-label={
-											isCapturing
-												? `${label}: ${t("shortcutsConfig.pressAKey")}`
-												: `${label}: ${formatBinding(recordingDraft[action], isMac)}`
-										}
-										onClick={() => {
-											setCaptureFor(null);
-											setConflict(null);
-											setRecordingCaptureFor(isCapturing ? null : action);
-										}}
-										title={
-											isCapturing
-												? t("shortcutsConfig.pressEscToCancel")
-												: t("shortcutsConfig.clickToChange")
-										}
-										className={[
-											"px-2 py-1 text-xs min-w-[90px] text-center select-none",
-											isCapturing ? "animate-pulse" : "cursor-pointer",
-										].join(" ")}
-									>
-										{isCapturing
-											? t("shortcutsConfig.pressAKey")
-											: formatBinding(recordingDraft[action], isMac)}
-									</Button>
+								<div key={action}>
+									<div className="flex items-center justify-between gap-4 border-b border-separator py-3">
+										<span className="text-[13px] text-foreground">{label}</span>
+										<Button
+											type="button"
+											variant="secondary"
+											size="sm"
+											aria-label={
+												isCapturing
+													? `${label}: ${t("shortcutsConfig.pressAKey")}`
+													: `${label}: ${formatBinding(recordingDraft[action], isMac)}`
+											}
+											onClick={() => {
+												setCaptureFor(null);
+												setConflict(null);
+												setRecordingCaptureFor(isCapturing ? null : action);
+											}}
+											title={
+												isCapturing
+													? t("shortcutsConfig.pressEscToCancel")
+													: t("shortcutsConfig.clickToChange")
+											}
+											className={[
+												"px-2 py-1 text-xs min-w-[90px] text-center select-none",
+												isCapturing ? "animate-pulse" : "cursor-pointer",
+											].join(" ")}
+										>
+											{isCapturing
+												? t("shortcutsConfig.pressAKey")
+												: formatBinding(recordingDraft[action], isMac)}
+										</Button>
+									</div>
+									{unavailable.includes(action) && (
+										<p className="px-1 py-1.5 text-xs text-warning">
+											{t("shortcutsConfig.registrationFailed", undefined, {
+												action: label,
+											})}
+										</p>
+									)}
 								</div>
 							);
 						})}
