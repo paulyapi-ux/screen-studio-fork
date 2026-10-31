@@ -3,6 +3,8 @@ import { AccountProfileContext } from "@/components/ui/account-avatar";
 import { DashboardSettingsContext } from "../dashboard/DashboardSettings";
 import { RecordlySignInDialog, type SignInReason } from "@/components/auth/RecordlySignInDialog";
 import { useRecordlyAuth } from "@/components/auth/useRecordlyAuth";
+import { useShortcuts } from "@/contexts/ShortcutsContext";
+import { useEditorExtraShortcuts } from "../hooks/useEditorExtraShortcuts";
 import { useVideoSourceRecovery } from "../hooks/useVideoSourceRecovery";
 import { useRecordingLibrary } from "../library/useRecordingLibrary";
 import { RecordingLibraryPanel } from "../library/RecordingLibraryPanel";
@@ -138,6 +140,16 @@ export function EditorShell(props: Props) {
 		handleAutoSuggestZoomsConsumed,
 	} = editing;
 	const { dialogActions, status: exportStatus, exportMessage } = exportController;
+	const { isMac: isMacPlatform } = useShortcuts();
+	useEditorExtraShortcuts({
+		isMac: isMacPlatform,
+		playheadSeconds: ui.currentTime,
+		durationSeconds: ui.duration,
+		seekTo: (seconds) => playback.handleSeek(seconds),
+		openExport: dialogActions.handleOpenExportDropdown,
+		previewVolume: ui.previewVolume,
+		setPreviewVolume: ui.setPreviewVolume,
+	});
 	const dashboardSettingsContent = useMemo(
 		() => (
 			<SettingsPanel

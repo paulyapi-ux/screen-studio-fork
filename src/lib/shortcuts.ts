@@ -37,6 +37,26 @@ export const FIXED_SHORTCUTS: FixedShortcut[] = [
 		display: "Del / ⌫",
 		bindings: [{ key: "delete" }, { key: "backspace" }],
 	},
+	{ label: "Export", display: "Ctrl + E", bindings: [{ key: "e", ctrl: true }] },
+	{
+		label: "Back / Forward 1 s",
+		display: "← / →",
+		bindings: [{ key: "arrowleft" }, { key: "arrowright" }],
+	},
+	{
+		label: "Back / Forward 5 s",
+		display: "Shift + ← / →",
+		bindings: [
+			{ key: "arrowleft", shift: true },
+			{ key: "arrowright", shift: true },
+		],
+	},
+	{
+		label: "Go to Start / End",
+		display: "Home / End",
+		bindings: [{ key: "home" }, { key: "end" }],
+	},
+	{ label: "Mute Preview", display: "M", bindings: [{ key: "m" }] },
 	{ label: "Pan Timeline", display: "Shift + Scroll", bindings: [] },
 	{ label: "Zoom Timeline", display: "Ctrl + Scroll", bindings: [] },
 ];
