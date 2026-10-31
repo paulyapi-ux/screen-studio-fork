@@ -8,6 +8,8 @@ export const RECORDING_SHORTCUT_ACTIONS = [
 	"toggleRecording",
 	"pauseResume",
 	"restartRecording",
+	"toggleMicrophone",
+	"toggleSystemAudio",
 ] as const;
 
 export type RecordingShortcutAction = (typeof RECORDING_SHORTCUT_ACTIONS)[number];
@@ -18,12 +20,16 @@ export const DEFAULT_RECORDING_SHORTCUTS: RecordingShortcutsConfig = {
 	toggleRecording: { key: "r", ctrl: true, shift: true },
 	pauseResume: { key: "p", ctrl: true, shift: true },
 	restartRecording: { key: "x", ctrl: true, shift: true },
+	toggleMicrophone: { key: "m", ctrl: true, shift: true },
+	toggleSystemAudio: { key: "s", ctrl: true, shift: true },
 };
 
 export const RECORDING_SHORTCUT_LABELS: Record<RecordingShortcutAction, string> = {
 	toggleRecording: "Start / Stop recording",
 	pauseResume: "Pause / Resume recording",
 	restartRecording: "Restart recording from zero",
+	toggleMicrophone: "Mute / unmute microphone",
+	toggleSystemAudio: "Mute / unmute system sound",
 };
 
 export function mergeRecordingShortcuts(partial: unknown): RecordingShortcutsConfig {

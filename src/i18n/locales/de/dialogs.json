@@ -48,7 +48,9 @@
 		"recordingActions": {
 			"toggleRecording": "Aufnahme starten / beenden",
 			"pauseResume": "Aufnahme pausieren / fortsetzen",
-			"restartRecording": "Aufnahme von vorn beginnen"
+			"restartRecording": "Aufnahme von vorn beginnen",
+			"toggleMicrophone": "Mikrofon stummschalten / aktivieren",
+			"toggleSystemAudio": "Systemton stummschalten / aktivieren"
 		},
 		"needsModifier": "Verwende Strg (Cmd auf dem Mac) oder Alt in der Kombination.",
 		"alreadyUsedByAction": "Bereits belegt von „{{action}}“.",

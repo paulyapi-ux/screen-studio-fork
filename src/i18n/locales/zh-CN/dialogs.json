@@ -48,7 +48,9 @@
 		"recordingActions": {
 			"toggleRecording": "开始 / 停止录制",
 			"pauseResume": "暂停 / 继续录制",
-			"restartRecording": "从头重新录制"
+			"restartRecording": "从头重新录制",
+			"toggleMicrophone": "静音 / 取消静音麦克风",
+			"toggleSystemAudio": "静音 / 取消静音系统声音"
 		},
 		"needsModifier": "组合中请使用 Ctrl（Mac 上为 Cmd）或 Alt。",
 		"alreadyUsedByAction": "已被“{{action}}”使用。",

@@ -2,6 +2,7 @@ import { fixWebmDuration } from "@fix-webm-duration/fix";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "@/components/ui/toast";
 import { getEffectiveRecordingDurationMs } from "@/lib/mediaTiming";
+import { type MuteSpan, recordingMuteLog } from "@/lib/muteSpans";
 import { acquireBrowserScreenCapture, isCapturePermissionDismissed } from "./browserScreenCapture";
 import {
 	getVideoExtensionForMimeType,
@@ -712,9 +713,23 @@ export function useScreenRecorder(): UseScreenRecorderReturn {
 		return source;
 	}, []);
 
+	const pendingMuteSpans = useRef<MuteSpan[] | null>(null);
+	/** Saves the muted stretches of this take next to the recording (the audio itself is untouched). */
+	const persistMuteSpans = useCallback(async (videoPath: string) => {
+		const spans = pendingMuteSpans.current ?? recordingMuteLog.take(Date.now());
+		pendingMuteSpans.current = null;
+		if (spans.length === 0) return;
+		try {
+			await window.electronAPI?.saveRecordingMuteSpans?.(videoPath, spans);
+		} catch (error) {
+			console.error("Failed to save mute spans:", error);
+		}
+	}, []);
+
 	const finalizeRecordingSession = useCallback(
 		async (videoPath: string, webcamPath: string | null) => {
 			const start = performance.now();
+			await persistMuteSpans(videoPath);
 			console.log("[PERF:RENDERER] Finalize Session & Switch to Editor: STARTED");
 			const shouldHideOverlayCursor = hideEditorOverlayCursorByDefault.current;
 			try {
@@ -748,7 +763,7 @@ export function useScreenRecorder(): UseScreenRecorderReturn {
 				`[PERF:RENDERER] Finalize Session & Switch to Editor: COMPLETED in ${(performance.now() - start).toFixed(2)}ms`,
 			);
 		},
-		[],
+		[persistMuteSpans],
 	);
 
 	const closeMicFallbackPauseInterval = useCallback((now = performance.now()) => {
@@ -1231,6 +1246,7 @@ export function useScreenRecorder(): UseScreenRecorderReturn {
 	}, []);
 
 	const stopRecording = useRef(() => {
+		pendingMuteSpans.current = recordingMuteLog.take(Date.now());
 		recordingStartGeneration.current += 1;
 		setPaused(false);
 		if (nativeScreenRecording.current && nativeWarmStartActive.current) {

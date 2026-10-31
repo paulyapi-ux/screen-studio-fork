@@ -520,6 +520,8 @@ contextBridge.exposeInMainWorld("electronAPI", {
 		return () => ipcRenderer.removeListener("recording-permissions-requested", listener);
 	},
 	showRecordingHud: () => ipcRenderer.invoke("show-recording-hud"),
+	saveRecordingMuteSpans: (videoPath: string, spans: unknown) =>
+		ipcRenderer.invoke("recording:save-mute-spans", videoPath, spans),
 	getRecordingShortcuts: () => ipcRenderer.invoke("recording-shortcuts:get"),
 	suspendRecordingShortcuts: () => ipcRenderer.invoke("recording-shortcuts:suspend"),
 	resumeRecordingShortcuts: () => ipcRenderer.invoke("recording-shortcuts:resume"),
