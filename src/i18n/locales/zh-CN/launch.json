@@ -1,5 +1,8 @@
 {
 	"recording": {
+		"shortcutNeedSource": "请先选择屏幕，然后使用快捷键。",
+		"restartPending": "将在 {{seconds}} 秒后重新开始。再次按下快捷键可取消。",
+		"restartCancelled": "已取消重新开始。",
 		"home": "主页",
 		"disableSystemAudio": "禁用系统音频",
 		"enableSystemAudio": "启用系统音频",

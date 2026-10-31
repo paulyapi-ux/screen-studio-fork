@@ -1,5 +1,8 @@
 {
 	"recording": {
+		"shortcutNeedSource": "Wähle zuerst einen Bildschirm, dann nutze die Tastenkombination.",
+		"restartPending": "Neustart in {{seconds}} s. Drücke die Tastenkombination erneut zum Abbrechen.",
+		"restartCancelled": "Neustart abgebrochen.",
 		"home": "Startseite",
 		"disableSystemAudio": "System-Audio deaktivieren",
 		"enableSystemAudio": "System-Audio aktivieren",

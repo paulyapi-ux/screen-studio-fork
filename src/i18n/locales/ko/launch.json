@@ -1,5 +1,8 @@
 {
 	"recording": {
+		"shortcutNeedSource": "먼저 화면을 선택한 다음 단축키를 사용하세요.",
+		"restartPending": "{{seconds}}초 후 다시 시작합니다. 취소하려면 단축키를 다시 누르세요.",
+		"restartCancelled": "다시 시작이 취소되었습니다.",
 		"home": "홈",
 		"disableSystemAudio": "시스템 오디오 끄기",
 		"enableSystemAudio": "시스템 오디오 켜기",

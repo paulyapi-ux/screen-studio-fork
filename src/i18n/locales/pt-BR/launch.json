@@ -1,5 +1,8 @@
 {
 	"recording": {
+		"shortcutNeedSource": "Escolha primeiro uma tela e depois use o atalho.",
+		"restartPending": "Reiniciando em {{seconds}} s. Pressione o atalho novamente para cancelar.",
+		"restartCancelled": "Reinício cancelado.",
 		"home": "Início",
 		"disableSystemAudio": "Desativar áudio do sistema",
 		"enableSystemAudio": "Ativar áudio do sistema",

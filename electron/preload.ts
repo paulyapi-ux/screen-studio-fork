@@ -520,6 +520,14 @@ contextBridge.exposeInMainWorld("electronAPI", {
 		return () => ipcRenderer.removeListener("recording-permissions-requested", listener);
 	},
 	showRecordingHud: () => ipcRenderer.invoke("show-recording-hud"),
+	getRecordingShortcuts: () => ipcRenderer.invoke("recording-shortcuts:get"),
+	saveRecordingShortcuts: (config: unknown) =>
+		ipcRenderer.invoke("recording-shortcuts:set", config),
+	onRecordingShortcut: (callback: (action: string) => void) => {
+		const listener = (_event: Electron.IpcRendererEvent, action: string) => callback(action);
+		ipcRenderer.on("recording-shortcut", listener);
+		return () => ipcRenderer.removeListener("recording-shortcut", listener);
+	},
 	createProjectFile: (data: unknown, thumbnail?: string | null) =>
 		ipcRenderer.invoke("create-project-file", data, thumbnail),
 	renameLibraryProject: (path: string, name: string) =>

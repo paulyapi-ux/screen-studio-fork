@@ -1,5 +1,8 @@
 {
 	"recording": {
+		"shortcutNeedSource": "Scegli prima uno schermo, poi usa la scorciatoia.",
+		"restartPending": "Riavvio tra {{seconds}} s. Premi di nuovo la scorciatoia per annullare.",
+		"restartCancelled": "Riavvio annullato.",
 		"home": "Home",
 		"disableSystemAudio": "Disabilita audio di sistema",
 		"enableSystemAudio": "Abilita audio di sistema",

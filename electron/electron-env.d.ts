@@ -863,6 +863,23 @@ interface Window {
 		showRecordingPermissions: () => Promise<void>;
 		onRecordingPermissionsRequested: (callback: () => void) => () => void;
 		showRecordingHud: () => Promise<void>;
+		getRecordingShortcuts: () => Promise<{
+			config: import("../src/lib/recordingShortcuts").RecordingShortcutsConfig;
+		}>;
+		saveRecordingShortcuts: (
+			config: import("../src/lib/recordingShortcuts").RecordingShortcutsConfig,
+		) => Promise<{
+			config: import("../src/lib/recordingShortcuts").RecordingShortcutsConfig;
+			registered: Record<
+				import("../src/lib/recordingShortcuts").RecordingShortcutAction,
+				boolean
+			>;
+		}>;
+		onRecordingShortcut: (
+			callback: (
+				action: import("../src/lib/recordingShortcuts").RecordingShortcutAction,
+			) => void,
+		) => () => void;
 		createProjectFile: (
 			data: unknown,
 			thumbnail?: string | null,

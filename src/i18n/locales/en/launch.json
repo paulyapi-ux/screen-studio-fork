@@ -1,5 +1,8 @@
 {
 	"recording": {
+		"shortcutNeedSource": "Pick a screen first, then use the shortcut.",
+		"restartPending": "Restarting in {{seconds}} s. Press the shortcut again to cancel.",
+		"restartCancelled": "Restart cancelled.",
 		"home": "Home",
 		"disableSystemAudio": "Disable system audio",
 		"enableSystemAudio": "Enable system audio",

@@ -1,5 +1,8 @@
 {
 	"recording": {
+		"shortcutNeedSource": "Сначала выберите экран, затем используйте сочетание клавиш.",
+		"restartPending": "Перезапуск через {{seconds}} с. Нажмите сочетание ещё раз, чтобы отменить.",
+		"restartCancelled": "Перезапуск отменён.",
 		"home": "Главная",
 		"disableSystemAudio": "Отключить системные звуки",
 		"enableSystemAudio": "Включить системные звуки",

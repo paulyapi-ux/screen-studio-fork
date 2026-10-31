@@ -1,5 +1,8 @@
 {
 	"recording": {
+		"shortcutNeedSource": "Kies eerst een scherm en gebruik dan de sneltoets.",
+		"restartPending": "Opnieuw starten over {{seconds}} s. Druk nogmaals op de sneltoets om te annuleren.",
+		"restartCancelled": "Opnieuw starten geannuleerd.",
 		"home": "Start",
 		"disableSystemAudio": "Systeemaudio uitschakelen",
 		"enableSystemAudio": "Systeemaudio inschakelen",

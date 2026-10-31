@@ -1,5 +1,8 @@
 {
 	"recording": {
+		"shortcutNeedSource": "Choisis d'abord un écran, puis utilise le raccourci.",
+		"restartPending": "Redémarrage dans {{seconds}} s. Appuie à nouveau sur le raccourci pour annuler.",
+		"restartCancelled": "Redémarrage annulé.",
 		"home": "Accueil",
 		"disableSystemAudio": "Désactiver l’audio système",
 		"enableSystemAudio": "Activer l’audio système",

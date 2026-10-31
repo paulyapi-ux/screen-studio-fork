@@ -34,6 +34,11 @@ import { resolveDisplayMediaSource } from "./ipc/register/sourceMapping";
 import { ensureMediaServer } from "./mediaServer";
 import { hardenWebContentsNavigation, shouldHardenWebContentsType } from "./navigationPolicy";
 import { shouldGrantDisplayCapture, shouldGrantMediaPermission } from "./permissionPolicy";
+import {
+	applyRecordingShortcuts,
+	getRecordingShortcutsConfig,
+	unregisterRecordingShortcuts,
+} from "./recordingShortcuts";
 import { ensurePackagedRendererServer, getPackagedRendererBaseUrl } from "./rendererServer";
 import { createSaveBeforeCloseController } from "./saveBeforeClose";
 import {
@@ -878,6 +883,7 @@ function createSourceSelectorWindowWrapper() {
 // On macOS, applications and their menu bar stay active until the user quits
 // explicitly with Cmd + Q.
 app.on("before-quit", () => {
+	unregisterRecordingShortcuts();
 	isAppQuitting = true;
 	authCallbacks.close();
 	void clearRecordingTrashUndo().catch((error) =>
@@ -920,6 +926,8 @@ app.whenReady().then(async () => {
 	}
 	const startupAuthCallback = authCallbacks.find(process.argv);
 	if (startupAuthCallback) authCallbacks.dispatch(startupAuthCallback);
+
+	applyRecordingShortcuts(getRecordingShortcutsConfig());
 
 	if (process.platform === "win32") {
 		app.setAppUserModelId("dev.recordly.app");

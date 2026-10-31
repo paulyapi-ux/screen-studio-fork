@@ -1,5 +1,8 @@
 {
 	"recording": {
+		"shortcutNeedSource": "請先選擇螢幕，然後使用快速鍵。",
+		"restartPending": "將在 {{seconds}} 秒後重新開始。再按一次快速鍵即可取消。",
+		"restartCancelled": "已取消重新開始。",
 		"home": "首頁",
 		"disableSystemAudio": "停用系統音訊",
 		"enableSystemAudio": "啟用系統音訊",
