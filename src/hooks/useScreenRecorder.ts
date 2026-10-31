@@ -127,7 +127,8 @@ type UseScreenRecorderReturn = {
 	toggleRecording: () => void;
 	pauseRecording: () => void;
 	resumeRecording: () => void;
-	cancelRecording: () => void;
+	/** Resolves once the discarded take is fully released (native capture closed). */
+	cancelRecording: () => void | Promise<void>;
 	cancelRecordingStart: () => Promise<boolean>;
 	preparePermissions: () => Promise<boolean>;
 	isMacOS: boolean;
@@ -2388,7 +2389,7 @@ export function useScreenRecorder(): UseScreenRecorderReturn {
 		}
 	}, [markRecordingResumed, paused, recording, resumeMicFallbackRecorder]);
 
-	const cancelRecording = useCallback(() => {
+	const cancelRecording = useCallback((): void | Promise<void> => {
 		recordingStartGeneration.current += 1;
 		if (!recording) return;
 		setPaused(false);
@@ -2410,10 +2411,10 @@ export function useScreenRecorder(): UseScreenRecorderReturn {
 		if (nativeScreenRecording.current) {
 			setRecording(false);
 			window.electronAPI?.setRecordingState(false);
-			void (async () => {
-				await Promise.allSettled([discardActiveNativeCapture(), stopMicFallbackRecorder()]);
-			})();
-			return;
+			return Promise.allSettled([
+				discardActiveNativeCapture(),
+				stopMicFallbackRecorder(),
+			]).then(() => undefined);
 		}
 
 		if (mediaRecorder.current) {

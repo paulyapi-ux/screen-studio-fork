@@ -5,8 +5,8 @@
  */
 export interface RestartControllerDeps {
 	delayMs: number;
-	/** Discards the take in progress. */
-	cancelRecording: () => void;
+	/** Discards the take in progress; may return a promise that resolves once it is released. */
+	cancelRecording: () => void | Promise<void>;
 	/** True once the discarded take is fully closed and a new one can start. */
 	isIdle: () => boolean;
 	startRecording: () => void;
@@ -72,8 +72,11 @@ export function createRestartController({
 			onNotice("pending");
 			pendingHandle = setTimer(() => {
 				pendingHandle = null;
-				cancelRecording();
-				waitUntilIdleThenStart(0);
+				// The old take must be fully released (native capture closed) before a new one
+				// starts, otherwise the new start is refused as "already recording".
+				void Promise.resolve(cancelRecording())
+					.catch(() => undefined)
+					.then(() => waitUntilIdleThenStart(0));
 			}, delayMs);
 		},
 		isPending: () => pendingHandle !== null,

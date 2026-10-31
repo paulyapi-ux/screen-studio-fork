@@ -23,6 +23,7 @@ let registeredAccelerators: string[] = [];
 let currentConfig: RecordingShortcutsConfig | null = null;
 
 function dispatchToWindows(action: RecordingShortcutAction) {
+	console.log(`[shortcuts] pressed: ${action}`);
 	for (const window of BrowserWindow.getAllWindows()) {
 		if (!window.isDestroyed()) window.webContents.send(RECORDING_SHORTCUT_EVENT, action);
 	}
@@ -67,6 +68,10 @@ export function applyRecordingShortcuts(
 			registered = false;
 		}
 		if (registered) registeredAccelerators.push(accelerator);
+		else
+			console.warn(
+				`[shortcuts] could not register ${action} (${accelerator}): already used by another application?`,
+			);
 		report[action] = registered;
 	}
 	return report;
