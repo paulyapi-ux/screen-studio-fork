@@ -4,7 +4,7 @@ Fork de **Recordly** (https://github.com/webadderallorg/Recordly, licence **AGPL
 
 **Lire d'abord** : `docs/ours/pivot-fork-recordly.md` (décisions, plan) et `docs/ours/spec.md` (notre spec v1).
 
-**État au 27/10/2026** : le fork se lance et enregistre sur le PC Windows du propriétaire (compte Recordly non requis). Les six éléments de différenciation sont **décidés** (voir `docs/ours/pivot-fork-recordly.md`, sections « Décisions » et « Ordre de construction »). **Aucun n'est construit** : le code de composition essayé trop tôt a été annulé. Ne rien construire sans son accord ; une étape à la fois.
+**État au 31/10/2026** : le fork se lance et enregistre sur le PC Windows du propriétaire (compte Recordly non requis). Étapes **1 (qualité d'aperçu), 2 (secours d'encodeur Windows, essai en arrière-plan au démarrage) et 3 (raccourcis globaux démarrer/arrêter, pause, redémarrer ; raccourcis d'éditeur)** faites **et testées par le propriétaire**. La coupure micro/son système par raccourci est **abandonnée pour l'instant**. **Prochaine étape : 4 (frappe qui garde le zoom ouvert)**, puis 5 (composition libre), puis 6 (nettoyage). Voir `docs/ours/pivot-fork-recordly.md` (« Décisions » et « Ordre de construction »). Ne rien construire sans son accord ; une étape à la fois ; réponses courtes.
 
 ## Le propriétaire du projet
 
