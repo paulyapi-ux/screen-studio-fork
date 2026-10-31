@@ -43,6 +43,16 @@
 		"loadFailed": "La police n’a pas pu être chargée. Veuillez vérifier que l’URL Google Fonts est correcte."
 	},
 	"shortcutsConfig": {
+		"recordingGroup": "Enregistrement (fonctionne dans toutes les applications)",
+		"recordingNote": "Ces raccourcis fonctionnent même quand une autre application est au premier plan.",
+		"recordingActions": {
+			"toggleRecording": "Démarrer / arrêter l'enregistrement",
+			"pauseResume": "Pause / reprise de l'enregistrement",
+			"restartRecording": "Redémarrer l'enregistrement à zéro"
+		},
+		"needsModifier": "Utilise Ctrl (Cmd sur Mac) ou Alt dans la combinaison.",
+		"alreadyUsedByAction": "Déjà utilisé par « {{action}} ».",
+		"registrationFailed": "« {{action}} » n'a pas pu être enregistré : une autre application utilise déjà cette combinaison.",
 		"title": "Raccourcis clavier",
 		"configurable": "Configurable",
 		"fixed": "Fixe",

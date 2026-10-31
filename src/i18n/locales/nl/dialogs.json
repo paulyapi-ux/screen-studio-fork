@@ -43,6 +43,16 @@
 		"loadFailed": "Het lettertype kon niet worden geladen. Controleer of de Google Fonts-URL correct is."
 	},
 	"shortcutsConfig": {
+		"recordingGroup": "Opname (werkt in elke toepassing)",
+		"recordingNote": "Deze sneltoetsen werken ook als een andere toepassing op de voorgrond staat.",
+		"recordingActions": {
+			"toggleRecording": "Opname starten / stoppen",
+			"pauseResume": "Opname pauzeren / hervatten",
+			"restartRecording": "Opname opnieuw beginnen"
+		},
+		"needsModifier": "Gebruik Ctrl (Cmd op Mac) of Alt in de combinatie.",
+		"alreadyUsedByAction": "Al in gebruik door “{{action}}”.",
+		"registrationFailed": "“{{action}}” kon niet worden geregistreerd: een andere toepassing gebruikt deze combinatie al.",
 		"title": "Sneltoetsen",
 		"configurable": "Aanpasbaar",
 		"fixed": "Vast",

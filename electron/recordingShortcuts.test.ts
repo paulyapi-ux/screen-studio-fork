@@ -89,3 +89,21 @@ describe("recording shortcuts (main process)", () => {
 		expect(writeAppSetting).toHaveBeenCalledWith(RECORDING_SHORTCUTS_SETTING_KEY, config);
 	});
 });
+
+describe("suspending while the shortcuts menu is open", () => {
+	it("releases the shortcuts, then restores the saved ones", async () => {
+		const { suspendRecordingShortcuts, resumeRecordingShortcuts } = await import(
+			"./recordingShortcuts"
+		);
+		const api = fakeApi();
+		applyRecordingShortcuts(DEFAULT_RECORDING_SHORTCUTS, api, vi.fn());
+		expect(api.callbacks.size).toBe(3);
+
+		suspendRecordingShortcuts(api);
+		expect(api.callbacks.size).toBe(0);
+
+		const report = resumeRecordingShortcuts(api, vi.fn());
+		expect(api.callbacks.size).toBe(3);
+		expect(report.toggleRecording).toBe(true);
+	});
+});

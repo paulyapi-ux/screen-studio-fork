@@ -43,6 +43,16 @@
 		"loadFailed": "Impossibile caricare il font. Verifica che l'URL Google Fonts sia corretto."
 	},
 	"shortcutsConfig": {
+		"recordingGroup": "Registrazione (funziona in qualsiasi applicazione)",
+		"recordingNote": "Queste scorciatoie funzionano anche quando un'altra applicazione è in primo piano.",
+		"recordingActions": {
+			"toggleRecording": "Avvia / ferma la registrazione",
+			"pauseResume": "Pausa / riprendi la registrazione",
+			"restartRecording": "Riavvia la registrazione da zero"
+		},
+		"needsModifier": "Usa Ctrl (Cmd su Mac) o Alt nella combinazione.",
+		"alreadyUsedByAction": "Già usata da «{{action}}».",
+		"registrationFailed": "Impossibile registrare «{{action}}»: un'altra applicazione usa già questa combinazione.",
 		"title": "Scorciatoie da tastiera",
 		"configurable": "Configurabile",
 		"fixed": "Fisso",

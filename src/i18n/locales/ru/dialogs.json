@@ -43,6 +43,16 @@
 		"loadFailed": "Не удалось загрузить шрифт. Проверьте ссылку на Google Fonts."
 	},
 	"shortcutsConfig": {
+		"recordingGroup": "Запись (работает в любом приложении)",
+		"recordingNote": "Эти сочетания работают, даже когда на переднем плане другое приложение.",
+		"recordingActions": {
+			"toggleRecording": "Начать / остановить запись",
+			"pauseResume": "Пауза / продолжить запись",
+			"restartRecording": "Начать запись заново"
+		},
+		"needsModifier": "Используйте в сочетании Ctrl (Cmd на Mac) или Alt.",
+		"alreadyUsedByAction": "Уже используется: «{{action}}».",
+		"registrationFailed": "Не удалось зарегистрировать «{{action}}»: это сочетание уже занято другим приложением.",
 		"title": "Сочетания клавиш",
 		"configurable": "Настраиваемые",
 		"fixed": "Фиксированные",

@@ -43,6 +43,16 @@
 		"loadFailed": "无法加载字体。请确认 Google Fonts URL 是否正确。"
 	},
 	"shortcutsConfig": {
+		"recordingGroup": "录制（在任何应用中均可使用）",
+		"recordingNote": "即使其他应用位于前台，这些快捷键也能使用。",
+		"recordingActions": {
+			"toggleRecording": "开始 / 停止录制",
+			"pauseResume": "暂停 / 继续录制",
+			"restartRecording": "从头重新录制"
+		},
+		"needsModifier": "组合中请使用 Ctrl（Mac 上为 Cmd）或 Alt。",
+		"alreadyUsedByAction": "已被“{{action}}”使用。",
+		"registrationFailed": "无法注册“{{action}}”：其他应用已占用此组合键。",
 		"title": "键盘快捷键",
 		"configurable": "可配置",
 		"fixed": "固定",

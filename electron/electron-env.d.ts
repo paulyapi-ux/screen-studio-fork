@@ -863,6 +863,8 @@ interface Window {
 		showRecordingPermissions: () => Promise<void>;
 		onRecordingPermissionsRequested: (callback: () => void) => () => void;
 		showRecordingHud: () => Promise<void>;
+		suspendRecordingShortcuts: () => Promise<void>;
+		resumeRecordingShortcuts: () => Promise<void>;
 		getRecordingShortcuts: () => Promise<{
 			config: import("../src/lib/recordingShortcuts").RecordingShortcutsConfig;
 		}>;

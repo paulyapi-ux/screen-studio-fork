@@ -72,6 +72,19 @@ export function applyRecordingShortcuts(
 	return report;
 }
 
+/** Releases the system-wide shortcuts while the shortcuts menu is open, so that pressing a
+ * current combination there records it instead of triggering the action. */
+export function suspendRecordingShortcuts(api: GlobalShortcutApi = globalShortcut) {
+	unregisterRecordingShortcuts(api);
+}
+
+export function resumeRecordingShortcuts(
+	api: GlobalShortcutApi = globalShortcut,
+	dispatch?: (action: RecordingShortcutAction) => void,
+) {
+	return applyRecordingShortcuts(getRecordingShortcutsConfig(), api, dispatch);
+}
+
 export function saveRecordingShortcuts(
 	config: RecordingShortcutsConfig,
 	api: GlobalShortcutApi = globalShortcut,

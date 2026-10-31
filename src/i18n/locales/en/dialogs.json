@@ -43,6 +43,16 @@
 		"loadFailed": "The font could not be loaded. Please verify the Google Fonts URL is correct."
 	},
 	"shortcutsConfig": {
+		"recordingGroup": "Recording (works in any application)",
+		"recordingNote": "These shortcuts work even when another application is in front.",
+		"recordingActions": {
+			"toggleRecording": "Start / stop recording",
+			"pauseResume": "Pause / resume recording",
+			"restartRecording": "Restart recording from zero"
+		},
+		"needsModifier": "Use Ctrl (Cmd on Mac) or Alt in the combination.",
+		"alreadyUsedByAction": "Already used by “{{action}}”.",
+		"registrationFailed": "“{{action}}” could not be registered: another application already uses this combination.",
 		"title": "Keyboard Shortcuts",
 		"configurable": "Configurable",
 		"fixed": "Fixed",

@@ -1,7 +1,5 @@
-import { Kbd, Description, Modal } from "@heroui/react";
-import { Keyboard, ArrowCounterClockwise as RotateCcw } from "@/components/ui/icons";
+import { Description, Kbd, Modal } from "@heroui/react";
 import { useCallback, useEffect, useState } from "react";
-import { toast } from "@/components/ui/toast";
 import { Button } from "@/components/ui/button";
 import {
 	Dialog,
@@ -10,7 +8,17 @@ import {
 	DialogHeader,
 	DialogTitle,
 } from "@/components/ui/dialog";
+import { Keyboard, ArrowCounterClockwise as RotateCcw } from "@/components/ui/icons";
+import { toast } from "@/components/ui/toast";
 import { useShortcuts } from "@/contexts/ShortcutsContext";
+import {
+	DEFAULT_RECORDING_SHORTCUTS,
+	findRecordingShortcutConflict,
+	isValidGlobalBinding,
+	RECORDING_SHORTCUT_ACTIONS,
+	type RecordingShortcutAction,
+	type RecordingShortcutsConfig,
+} from "@/lib/recordingShortcuts";
 import {
 	DEFAULT_SHORTCUTS,
 	FIXED_SHORTCUTS,
@@ -40,13 +48,80 @@ export function ShortcutsConfigDialog() {
 		conflictWith: ShortcutConflict;
 	} | null>(null);
 
+	const [recordingDraft, setRecordingDraft] = useState<RecordingShortcutsConfig>(
+		DEFAULT_RECORDING_SHORTCUTS,
+	);
+	const [recordingCaptureFor, setRecordingCaptureFor] = useState<RecordingShortcutAction | null>(
+		null,
+	);
+
 	useEffect(() => {
 		if (isConfigOpen) {
 			setDraft(shortcuts);
 			setCaptureFor(null);
 			setConflict(null);
+			setRecordingCaptureFor(null);
+			void window.electronAPI
+				?.getRecordingShortcuts?.()
+				.then((result) => {
+					if (result?.config) setRecordingDraft(result.config);
+				})
+				.catch(() => undefined);
 		}
 	}, [isConfigOpen, shortcuts]);
+
+	// While the menu is open the global shortcuts are released, so pressing a current
+	// combination records it instead of triggering its action.
+	useEffect(() => {
+		if (!isConfigOpen) return;
+		void window.electronAPI?.suspendRecordingShortcuts?.();
+		return () => {
+			void window.electronAPI?.resumeRecordingShortcuts?.();
+		};
+	}, [isConfigOpen]);
+
+	// Capturing a combination for one of the global recording shortcuts.
+	useEffect(() => {
+		if (!recordingCaptureFor) return;
+
+		const handleCapture = (e: KeyboardEvent) => {
+			e.preventDefault();
+			e.stopPropagation();
+
+			if (e.key === "Escape") {
+				setRecordingCaptureFor(null);
+				return;
+			}
+			if (MODIFIER_KEYS.has(e.key)) return;
+
+			const binding: ShortcutBinding = {
+				key: e.key.toLowerCase(),
+				...(e.ctrlKey || e.metaKey ? { ctrl: true } : {}),
+				...(e.shiftKey ? { shift: true } : {}),
+				...(e.altKey ? { alt: true } : {}),
+			};
+			const action = recordingCaptureFor;
+			setRecordingCaptureFor(null);
+
+			if (!isValidGlobalBinding(binding)) {
+				toast.error(t("shortcutsConfig.needsModifier"));
+				return;
+			}
+			const other = findRecordingShortcutConflict(binding, action, recordingDraft);
+			if (other) {
+				toast.error(
+					t("shortcutsConfig.alreadyUsedByAction", undefined, {
+						action: t(`shortcutsConfig.recordingActions.${other}`),
+					}),
+				);
+				return;
+			}
+			setRecordingDraft((prev) => ({ ...prev, [action]: binding }));
+		};
+
+		window.addEventListener("keydown", handleCapture, { capture: true });
+		return () => window.removeEventListener("keydown", handleCapture, { capture: true });
+	}, [recordingCaptureFor, recordingDraft, t]);
 
 	useEffect(() => {
 		if (!captureFor) return;
@@ -105,18 +180,31 @@ export function ShortcutsConfigDialog() {
 	const handleSave = useCallback(async () => {
 		setShortcuts(draft);
 		await persistShortcuts(draft);
-		toast.success(t("shortcutsConfig.saved"));
+		const saved = await window.electronAPI?.saveRecordingShortcuts?.(recordingDraft);
+		const refused = RECORDING_SHORTCUT_ACTIONS.filter(
+			(action) => saved && saved.registered[action] === false,
+		);
+		for (const action of refused) {
+			toast.error(
+				t("shortcutsConfig.registrationFailed", undefined, {
+					action: t(`shortcutsConfig.recordingActions.${action}`),
+				}),
+			);
+		}
+		if (refused.length === 0) toast.success(t("shortcutsConfig.saved"));
 		closeConfig();
-	}, [draft, setShortcuts, persistShortcuts, closeConfig, t]);
+	}, [draft, recordingDraft, setShortcuts, persistShortcuts, closeConfig, t]);
 
 	const handleReset = useCallback(() => {
 		setDraft({ ...DEFAULT_SHORTCUTS });
+		setRecordingDraft({ ...DEFAULT_RECORDING_SHORTCUTS });
 		toast.info(t("shortcutsConfig.resetNotice"));
 	}, [t]);
 
 	const handleClose = useCallback(() => {
 		setCaptureFor(null);
 		setConflict(null);
+		setRecordingCaptureFor(null);
 		closeConfig();
 	}, [closeConfig]);
 
@@ -136,6 +224,55 @@ export function ShortcutsConfigDialog() {
 				</DialogHeader>
 
 				<Modal.Body className="min-h-0 space-y-6 overflow-y-auto">
+					<div className="space-y-0.5">
+						<p className="text-[13px] font-medium text-foreground">
+							{t("shortcutsConfig.recordingGroup")}
+						</p>
+						<p className="mb-3 text-xs text-muted-foreground">
+							{t("shortcutsConfig.recordingNote")}
+						</p>
+						{RECORDING_SHORTCUT_ACTIONS.map((action) => {
+							const isCapturing = recordingCaptureFor === action;
+							const label = t(`shortcutsConfig.recordingActions.${action}`);
+							return (
+								<div
+									key={action}
+									className="flex items-center justify-between gap-4 border-b border-separator py-3"
+								>
+									<span className="text-[13px] text-foreground">{label}</span>
+									<Button
+										type="button"
+										variant="secondary"
+										size="sm"
+										aria-label={
+											isCapturing
+												? `${label}: ${t("shortcutsConfig.pressAKey")}`
+												: `${label}: ${formatBinding(recordingDraft[action], isMac)}`
+										}
+										onClick={() => {
+											setCaptureFor(null);
+											setConflict(null);
+											setRecordingCaptureFor(isCapturing ? null : action);
+										}}
+										title={
+											isCapturing
+												? t("shortcutsConfig.pressEscToCancel")
+												: t("shortcutsConfig.clickToChange")
+										}
+										className={[
+											"px-2 py-1 text-xs min-w-[90px] text-center select-none",
+											isCapturing ? "animate-pulse" : "cursor-pointer",
+										].join(" ")}
+									>
+										{isCapturing
+											? t("shortcutsConfig.pressAKey")
+											: formatBinding(recordingDraft[action], isMac)}
+									</Button>
+								</div>
+							);
+						})}
+					</div>
+
 					<div className="space-y-0.5">
 						<p className="mb-3 text-[13px] font-medium text-foreground">
 							{t("shortcutsConfig.configurable")}
@@ -160,6 +297,7 @@ export function ShortcutsConfigDialog() {
 											}
 											onClick={() => {
 												setConflict(null);
+												setRecordingCaptureFor(null);
 												setCaptureFor(isCapturing ? null : action);
 											}}
 											title={

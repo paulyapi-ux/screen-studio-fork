@@ -43,6 +43,16 @@
 		"loadFailed": "Die Schriftart konnte nicht geladen werden. Bitte überprüfen Sie, ob die Google Fonts-URL korrekt ist."
 	},
 	"shortcutsConfig": {
+		"recordingGroup": "Aufnahme (funktioniert in jeder Anwendung)",
+		"recordingNote": "Diese Tastenkombinationen funktionieren auch, wenn eine andere Anwendung im Vordergrund ist.",
+		"recordingActions": {
+			"toggleRecording": "Aufnahme starten / beenden",
+			"pauseResume": "Aufnahme pausieren / fortsetzen",
+			"restartRecording": "Aufnahme von vorn beginnen"
+		},
+		"needsModifier": "Verwende Strg (Cmd auf dem Mac) oder Alt in der Kombination.",
+		"alreadyUsedByAction": "Bereits belegt von „{{action}}“.",
+		"registrationFailed": "„{{action}}“ konnte nicht registriert werden: Eine andere Anwendung nutzt diese Kombination bereits.",
 		"title": "Tastaturkürzel",
 		"configurable": "Konfigurierbar",
 		"fixed": "Fest",

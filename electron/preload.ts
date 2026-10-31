@@ -521,6 +521,8 @@ contextBridge.exposeInMainWorld("electronAPI", {
 	},
 	showRecordingHud: () => ipcRenderer.invoke("show-recording-hud"),
 	getRecordingShortcuts: () => ipcRenderer.invoke("recording-shortcuts:get"),
+	suspendRecordingShortcuts: () => ipcRenderer.invoke("recording-shortcuts:suspend"),
+	resumeRecordingShortcuts: () => ipcRenderer.invoke("recording-shortcuts:resume"),
 	saveRecordingShortcuts: (config: unknown) =>
 		ipcRenderer.invoke("recording-shortcuts:set", config),
 	onRecordingShortcut: (callback: (action: string) => void) => {

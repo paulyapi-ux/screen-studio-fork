@@ -43,6 +43,16 @@
 		"loadFailed": "글꼴을 불러올 수 없습니다. Google Fonts URL이 올바른지 확인해 주세요."
 	},
 	"shortcutsConfig": {
+		"recordingGroup": "녹화 (모든 앱에서 작동)",
+		"recordingNote": "다른 앱이 앞에 있어도 이 단축키는 작동합니다.",
+		"recordingActions": {
+			"toggleRecording": "녹화 시작 / 중지",
+			"pauseResume": "녹화 일시정지 / 재개",
+			"restartRecording": "녹화를 처음부터 다시 시작"
+		},
+		"needsModifier": "조합에 Ctrl(Mac에서는 Cmd) 또는 Alt를 사용하세요.",
+		"alreadyUsedByAction": "이미 “{{action}}”에서 사용 중입니다.",
+		"registrationFailed": "“{{action}}”을(를) 등록하지 못했습니다. 다른 앱이 이미 이 조합을 사용합니다.",
 		"title": "키보드 단축키",
 		"configurable": "변경 가능",
 		"fixed": "고정",

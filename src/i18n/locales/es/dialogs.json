@@ -43,6 +43,16 @@
 		"loadFailed": "No se pudo cargar la fuente. Por favor verifica que la URL de Google Fonts sea correcta."
 	},
 	"shortcutsConfig": {
+		"recordingGroup": "Grabación (funciona en cualquier aplicación)",
+		"recordingNote": "Estos atajos funcionan incluso cuando otra aplicación está en primer plano.",
+		"recordingActions": {
+			"toggleRecording": "Iniciar / detener la grabación",
+			"pauseResume": "Pausar / reanudar la grabación",
+			"restartRecording": "Reiniciar la grabación desde cero"
+		},
+		"needsModifier": "Usa Ctrl (Cmd en Mac) o Alt en la combinación.",
+		"alreadyUsedByAction": "Ya lo usa «{{action}}».",
+		"registrationFailed": "No se pudo registrar «{{action}}»: otra aplicación ya usa esta combinación.",
 		"title": "Atajos de teclado",
 		"configurable": "Configurable",
 		"fixed": "Fijo",

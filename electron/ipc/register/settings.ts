@@ -3,7 +3,12 @@ import { app, BrowserWindow, ipcMain } from "electron";
 import { hasAppSetting, readAppSettingsStore, writeAppSettingsStore } from "../../appSettingsStore";
 import { createCountdownController } from "../../countdownController";
 import { hideCursor } from "../../cursorHider";
-import { getRecordingShortcutsConfig, saveRecordingShortcuts } from "../../recordingShortcuts";
+import {
+	getRecordingShortcutsConfig,
+	resumeRecordingShortcuts,
+	saveRecordingShortcuts,
+	suspendRecordingShortcuts,
+} from "../../recordingShortcuts";
 import { createCountdownWindow } from "../../windows";
 import { COUNTDOWN_SETTINGS_FILE, RECORDINGS_SETTINGS_FILE, SHORTCUTS_FILE } from "../constants";
 import {
@@ -44,6 +49,8 @@ export function registerSettingsHandlers() {
 	ipcMain.handle("recording-shortcuts:get", () => ({
 		config: getRecordingShortcutsConfig(),
 	}));
+	ipcMain.handle("recording-shortcuts:suspend", () => suspendRecordingShortcuts());
+	ipcMain.handle("recording-shortcuts:resume", () => resumeRecordingShortcuts());
 	ipcMain.handle("recording-shortcuts:set", (_event, config: unknown) =>
 		saveRecordingShortcuts(config as Parameters<typeof saveRecordingShortcuts>[0]),
 	);

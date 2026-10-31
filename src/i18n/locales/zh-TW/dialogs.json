@@ -43,6 +43,16 @@
 		"loadFailed": "無法載入字型。請確認 Google Fonts URL 是否正確。"
 	},
 	"shortcutsConfig": {
+		"recordingGroup": "錄製（在任何應用程式中皆可使用）",
+		"recordingNote": "即使其他應用程式位於前景，這些快速鍵也能使用。",
+		"recordingActions": {
+			"toggleRecording": "開始 / 停止錄製",
+			"pauseResume": "暫停 / 繼續錄製",
+			"restartRecording": "從頭重新錄製"
+		},
+		"needsModifier": "組合中請使用 Ctrl（Mac 上為 Cmd）或 Alt。",
+		"alreadyUsedByAction": "已被「{{action}}」使用。",
+		"registrationFailed": "無法註冊「{{action}}」：其他應用程式已佔用此組合鍵。",
 		"title": "鍵盤快捷鍵",
 		"configurable": "可自訂",
 		"fixed": "固定",
