@@ -48,9 +48,7 @@
 		"recordingActions": {
 			"toggleRecording": "Начать / остановить запись",
 			"pauseResume": "Пауза / продолжить запись",
-			"restartRecording": "Начать запись заново",
-			"toggleMicrophone": "Выключить / включить микрофон",
-			"toggleSystemAudio": "Выключить / включить системный звук"
+			"restartRecording": "Начать запись заново"
 		},
 		"needsModifier": "Используйте в сочетании Ctrl (Cmd на Mac) или Alt.",
 		"alreadyUsedByAction": "Уже используется: «{{action}}».",

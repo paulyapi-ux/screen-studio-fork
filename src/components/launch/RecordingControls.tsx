@@ -1,4 +1,3 @@
-import { Button, Separator, Tooltip } from "@heroui/react";
 import {
 	House,
 	MicrophoneIcon,
@@ -6,21 +5,16 @@ import {
 	MinusIcon,
 	PauseIcon,
 	PlayIcon,
-	SpeakerHighIcon,
-	SpeakerXIcon,
 	XIcon,
 } from "@/components/ui/icons";
 import { useScopedT } from "@/contexts/I18nContext";
+import { Button, Separator, Tooltip } from "@heroui/react";
 import styles from "./LaunchWindow.module.css";
 
 interface RecordingControlsProps {
 	onHome: () => void;
 	paused: boolean;
 	microphoneEnabled: boolean;
-	/** Muted with the shortcut: still recorded, silenced later in the editor. */
-	microphoneMuted?: boolean;
-	systemAudioEnabled?: boolean;
-	systemAudioMuted?: boolean;
 	elapsed: number;
 	onPauseResume: () => void;
 	onStopRecording: () => void;
@@ -32,9 +26,6 @@ export function RecordingControls({
 	onHome,
 	paused,
 	microphoneEnabled,
-	microphoneMuted = false,
-	systemAudioEnabled = false,
-	systemAudioMuted = false,
 	elapsed,
 	onPauseResume,
 	onStopRecording,
@@ -75,16 +66,10 @@ export function RecordingControls({
 					isIconOnly
 					variant="ghost"
 					isDisabled
-					className={`${actionClass} ${microphoneMuted ? "text-danger" : ""}`}
-					aria-label={
-						!microphoneEnabled
-							? "Microphone off"
-							: microphoneMuted
-								? "Microphone muted"
-								: "Microphone on"
-					}
+					className={actionClass}
+					aria-label={microphoneEnabled ? "Microphone on" : "Microphone off"}
 				>
-					{microphoneEnabled && !microphoneMuted ? (
+					{microphoneEnabled ? (
 						<MicrophoneIcon weight="fill" className="size-4" />
 					) : (
 						<MicrophoneSlashIcon className="size-4" />
@@ -92,21 +77,6 @@ export function RecordingControls({
 				</Button>
 				<Tooltip.Content>{t("recording.micToggleDisabledTip")}</Tooltip.Content>
 			</Tooltip>
-			{systemAudioEnabled && (
-				<Button
-					isIconOnly
-					variant="ghost"
-					isDisabled
-					className={`${actionClass} ${systemAudioMuted ? "text-danger" : ""}`}
-					aria-label={systemAudioMuted ? "System sound muted" : "System sound on"}
-				>
-					{systemAudioMuted ? (
-						<SpeakerXIcon className="size-4" />
-					) : (
-						<SpeakerHighIcon weight="fill" className="size-4" />
-					)}
-				</Button>
-			)}
 			<Separator orientation="vertical" className="mx-1 h-5 self-center" />
 			<Tooltip>
 				<Button

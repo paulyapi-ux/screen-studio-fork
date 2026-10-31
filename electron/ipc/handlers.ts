@@ -1,11 +1,10 @@
 import { BrowserWindow } from "electron";
 import { registerAnnouncementHandlers } from "./register/announcements";
+import { registerCapturePickerHandlers } from "./register/capturePicker";
 import { registerAssetHandlers } from "./register/assets";
 import { registerCaptionHandlers } from "./register/captions";
-import { registerCapturePickerHandlers } from "./register/capturePicker";
 import { registerCloudShareHandlers } from "./register/cloudShare";
 import { registerExportHandlers } from "./register/export";
-import { registerMuteSpansHandlers } from "./register/muteSpans";
 import { registerPermissionHandlers } from "./register/permissions";
 import { registerProjectHandlers } from "./register/project";
 import { registerRecordingHandlers } from "./register/recording";
@@ -76,5 +75,4 @@ export function registerIpcHandlers(
 	registerCloudShareHandlers();
 	registerProjectHandlers();
 	registerSettingsHandlers();
-	registerMuteSpansHandlers();
 }

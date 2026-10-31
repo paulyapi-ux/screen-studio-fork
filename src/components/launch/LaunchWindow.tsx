@@ -86,9 +86,7 @@ function LaunchWindowContent() {
 
 	const { selectedSource, hasSelectedSource, syncSelectedSource } = useLaunchWindowActions();
 
-	const { micMuted, systemMuted } = useRecordingShortcutActions({
-		microphoneEnabled,
-		systemAudioEnabled,
+	useRecordingShortcutActions({
 		recording,
 		paused,
 		finalizing,
@@ -274,9 +272,6 @@ function LaunchWindowContent() {
 			onHome={openHome}
 			paused={paused}
 			microphoneEnabled={microphoneEnabled}
-			microphoneMuted={micMuted}
-			systemAudioEnabled={systemAudioEnabled}
-			systemAudioMuted={systemMuted}
 			elapsed={elapsed}
 			onPauseResume={paused ? resumeRecording : pauseRecording}
 			onStopRecording={toggleRecording}

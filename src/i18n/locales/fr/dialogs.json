@@ -48,9 +48,7 @@
 		"recordingActions": {
 			"toggleRecording": "Démarrer / arrêter l'enregistrement",
 			"pauseResume": "Pause / reprise de l'enregistrement",
-			"restartRecording": "Redémarrer l'enregistrement à zéro",
-			"toggleMicrophone": "Couper / rétablir le micro",
-			"toggleSystemAudio": "Couper / rétablir le son système"
+			"restartRecording": "Redémarrer l'enregistrement à zéro"
 		},
 		"needsModifier": "Utilise Ctrl (Cmd sur Mac) ou Alt dans la combinaison.",
 		"alreadyUsedByAction": "Déjà utilisé par « {{action}} ».",

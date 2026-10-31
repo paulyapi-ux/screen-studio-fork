@@ -48,9 +48,7 @@
 		"recordingActions": {
 			"toggleRecording": "녹화 시작 / 중지",
 			"pauseResume": "녹화 일시정지 / 재개",
-			"restartRecording": "녹화를 처음부터 다시 시작",
-			"toggleMicrophone": "마이크 음소거 / 해제",
-			"toggleSystemAudio": "시스템 소리 음소거 / 해제"
+			"restartRecording": "녹화를 처음부터 다시 시작"
 		},
 		"needsModifier": "조합에 Ctrl(Mac에서는 Cmd) 또는 Alt를 사용하세요.",
 		"alreadyUsedByAction": "이미 “{{action}}”에서 사용 중입니다.",

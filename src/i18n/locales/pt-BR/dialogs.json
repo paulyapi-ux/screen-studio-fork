@@ -48,9 +48,7 @@
 		"recordingActions": {
 			"toggleRecording": "Iniciar / parar a gravação",
 			"pauseResume": "Pausar / retomar a gravação",
-			"restartRecording": "Reiniciar a gravação do zero",
-			"toggleMicrophone": "Silenciar / ativar o microfone",
-			"toggleSystemAudio": "Silenciar / ativar o som do sistema"
+			"restartRecording": "Reiniciar a gravação do zero"
 		},
 		"needsModifier": "Use Ctrl (Cmd no Mac) ou Alt na combinação.",
 		"alreadyUsedByAction": "Já usado por “{{action}}”.",

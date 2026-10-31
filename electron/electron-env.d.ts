@@ -863,10 +863,6 @@ interface Window {
 		showRecordingPermissions: () => Promise<void>;
 		onRecordingPermissionsRequested: (callback: () => void) => () => void;
 		showRecordingHud: () => Promise<void>;
-		saveRecordingMuteSpans: (
-			videoPath: string,
-			spans: import("../src/lib/muteSpans").MuteSpan[],
-		) => Promise<{ success: boolean; path?: string; error?: string }>;
 		suspendRecordingShortcuts: () => Promise<void>;
 		resumeRecordingShortcuts: () => Promise<void>;
 		getRecordingShortcuts: () => Promise<{

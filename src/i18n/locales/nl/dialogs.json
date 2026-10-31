@@ -48,9 +48,7 @@
 		"recordingActions": {
 			"toggleRecording": "Opname starten / stoppen",
 			"pauseResume": "Opname pauzeren / hervatten",
-			"restartRecording": "Opname opnieuw beginnen",
-			"toggleMicrophone": "Microfoon dempen / inschakelen",
-			"toggleSystemAudio": "Systeemgeluid dempen / inschakelen"
+			"restartRecording": "Opname opnieuw beginnen"
 		},
 		"needsModifier": "Gebruik Ctrl (Cmd op Mac) of Alt in de combinatie.",
 		"alreadyUsedByAction": "Al in gebruik door “{{action}}”.",
