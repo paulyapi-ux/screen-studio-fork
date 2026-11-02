@@ -1,5 +1,6 @@
-import { normalizeExportPreferences, type ExportPreferences } from "./exportPreferences";
+import { type CompositionSettings, normalizeComposition } from "@/lib/composition/settings";
 import { loadAppSetting, saveAppSetting } from "../../lib/appSettings";
+import { type ExportPreferences, normalizeExportPreferences } from "./exportPreferences";
 import {
 	getDefaultBorderRadiusPercent,
 	legacyBorderRadiusPixelsToPercent,
@@ -56,8 +57,12 @@ type PresetAutoCaptionSettings = ProjectEditorState["autoCaptionSettings"];
 type PresetCropRegion = ProjectEditorState["cropRegion"];
 type PresetWebcamSettings = Omit<ProjectEditorState["webcam"], "sourcePath" | "visibleRanges">;
 
+/** The layout part of a composition. The grid is a view aid and is not saved in presets. */
+export type PresetComposition = Pick<CompositionSettings, "screenRect" | "locks">;
+
 export interface EditorPresetSnapshot extends Omit<PersistedEditorControls, "webcam"> {
 	borderRadiusUnit: "percent";
+	composition: PresetComposition;
 	cropRegion: PresetCropRegion;
 	webcam: PresetWebcamSettings;
 	autoCaptionSettings: PresetAutoCaptionSettings;
@@ -203,6 +208,9 @@ function normalizeEditorPresetSnapshot(candidate: unknown): EditorPresetSnapshot
 		...normalizedControls,
 		borderRadiusUnit: "percent",
 		webcam,
+		composition: (({ screenRect, locks }) => ({ screenRect, locks }))(
+			normalizeComposition(raw.composition),
+		),
 		cropRegion: normalizedCropRegion,
 		autoCaptionSettings: normalizePresetAutoCaptionSettings(raw.autoCaptionSettings),
 	};

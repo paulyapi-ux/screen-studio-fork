@@ -25,6 +25,12 @@ export function useVideoEditorPresets({
 	const [presetPopoverOpen, setPresetPopoverOpen] = useState(false);
 	const [presetNameDraft, setPresetNameDraft] = useState("");
 
+	// A saved composition belongs to its format: only those made for the current one are offered.
+	const compatibleEditorPresets = useMemo(
+		() => editorPresets.filter((preset) => preset.snapshot.aspectRatio === aspectRatio),
+		[editorPresets, aspectRatio],
+	);
+
 	const currentSnapshot = useMemo<EditorPresetSnapshot>(
 		() => ({
 			wallpaper: appearance.wallpaper,
@@ -63,6 +69,10 @@ export function useVideoEditorPresets({
 			cursorSway: appearance.cursorSway,
 			borderRadius: appearance.borderRadius,
 			borderRadiusUnit: "percent",
+			composition: {
+				screenRect: appearance.composition.screenRect,
+				locks: { ...appearance.composition.locks },
+			},
 			padding: { ...appearance.padding },
 			cropRegion: { ...appearance.cropRegion },
 			webcam: (({ sourcePath: _sourcePath, visibleRanges: _visibleRanges, ...settings }) =>
@@ -111,6 +121,11 @@ export function useVideoEditorPresets({
 			appearance.setCursorSway(snapshot.cursorSway);
 			appearance.setBorderRadius(snapshot.borderRadius);
 			appearance.setPadding({ ...snapshot.padding });
+			appearance.setComposition((current) => ({
+				...current,
+				screenRect: snapshot.composition.screenRect,
+				locks: { ...snapshot.composition.locks },
+			}));
 			appearance.setCropRegion({ ...snapshot.cropRegion });
 			appearance.setWebcam((current) => ({
 				...snapshot.webcam,
@@ -137,6 +152,7 @@ export function useVideoEditorPresets({
 	});
 	return {
 		editorPresets,
+		compatibleEditorPresets,
 		activeEditorPresetId,
 		presetPopoverOpen,
 		setPresetPopoverOpen,

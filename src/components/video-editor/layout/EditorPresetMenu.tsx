@@ -1,5 +1,5 @@
-import { BookmarkSimple, CaretDown, Check, X } from "@/components/ui/icons";
 import { Button } from "@/components/ui/button";
+import { BookmarkSimple, CaretDown, Check, X } from "@/components/ui/icons";
 import { Input } from "@/components/ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import type { useI18n } from "@/contexts/I18nContext";
@@ -13,7 +13,7 @@ type Props = {
 
 export function EditorPresetMenu({ t, presets }: Props) {
 	const {
-		editorPresets,
+		compatibleEditorPresets: editorPresets,
 		presetPopoverOpen,
 		setPresetPopoverOpen,
 		presetNameDraft,
