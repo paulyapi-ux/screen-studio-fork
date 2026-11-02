@@ -188,6 +188,11 @@
 	"export": {
 		"processingAudioEdits": "Audio verwerken met snelheids-/overlay-bewerkingen"
 	},
+	"composition": {
+		"title": "Compositie",
+		"reset": "Compositie herstellen",
+		"screenFrame": "Positie en grootte van het scherm"
+	},
 	"previewQuality": {
 		"label": "Voorbeeld",
 		"full": "Volledig",

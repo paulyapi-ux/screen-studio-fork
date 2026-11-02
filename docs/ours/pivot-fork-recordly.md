@@ -82,6 +82,8 @@ Essai de l'encodeur matériel avant chaque enregistrement, bascule automatique v
 
 - **Écrit (étape 4, 02/11), à tester** : `src/lib/typingActivity.ts` (catégories de frappe : « texte » / « édition », jamais la touche), capture des frappes par le crochet clavier (`electron/ipc/cursor/interaction.ts`, **Windows et Linux ; pas encore Mac**, où le crochet global est désactivé), règle de zoom dans `zoomSuggestionUtils.ts` (clic + au moins 2 touches de texte en 3 s, fermeture 2 s après la dernière frappe, jamais au-delà du zoom suivant, focus sur le clic). Ne vaut que pour les **nouveaux** enregistrements. **Testé et validé par le propriétaire sur Windows (02/11).**
 
+- **Écrit (étape 5a, 02/11), à tester** : bouton « Composition » au-dessus de l'aperçu ; un cadre déplaçable (coins pour redimensionner, mêmes proportions que la vidéo) avec **magnétisme** sur les bords et le centre du canevas et **guides** (Alt = déplacement libre) ; « Réinitialiser la composition » revient à la disposition classique. Le cadre libre est sauvegardé dans le projet et pris en compte par l'aperçu et l'export. Pas encore : webcam déplaçable (5b), grille et cadenas (5c), compositions sauvegardées (5d).
+
 ## Ordre de construction (validé le 27/10/2026, rien n'est commencé)
 1. Qualité d'aperçu. 2. Secours d'encodeur Windows (à tester sur le PC). 3. Raccourcis globaux + retour visuel. 4. Frappe et zoom.
 5. Composition libre, en quatre sous-étapes : cadre libre de l'écran, webcam déplaçable, grille + magnétisme + cadenas, compositions sauvegardées.

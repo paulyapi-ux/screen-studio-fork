@@ -1,4 +1,11 @@
-import { type Dispatch, type RefObject, type SetStateAction, useState } from "react";
+import {
+	type Dispatch,
+	type RefObject,
+	type SetStateAction,
+	useEffect,
+	useRef,
+	useState,
+} from "react";
 import { Button } from "@/components/ui/button";
 import {
 	DropdownMenu,
@@ -7,6 +14,7 @@ import {
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
+	BoundingBox,
 	CaretDown,
 	Check,
 	Crop,
@@ -30,6 +38,7 @@ import type { useI18n } from "@/contexts/I18nContext";
 import { ASPECT_RATIOS, type AspectRatio, getAspectRatioLabel } from "@/utils/aspectRatioUtils";
 import type { useVideoEditorAudio } from "../audio/useVideoEditorAudio";
 import type { CaptionEditTarget } from "../captionEditing";
+import { getCroppedVideoAspect, getEffectiveScreenRect } from "../compositionLayout";
 import type { useAnnotationRegionCommands } from "../hooks/useAnnotationRegionCommands";
 import type { useEditorPlaybackControls } from "../hooks/useEditorPlaybackControls";
 import type { useTimelineProjection } from "../hooks/useTimelineProjection";
@@ -44,6 +53,7 @@ import type { useAppearanceState } from "../state/useAppearanceState";
 import type { useTimelineState } from "../state/useTimelineState";
 import type { TimelineEditorHandle } from "../timeline/TimelineEditor";
 import type { VideoPlaybackRef } from "../VideoPlayback";
+import { CompositionOverlay } from "./CompositionOverlay";
 import { EditorVideoPreview } from "./EditorVideoPreview";
 
 type Props = {
@@ -125,6 +135,30 @@ export function EditorPreviewPanel(props: Props) {
 	} = props;
 
 	const [previewQuality, setPreviewQuality] = useState(loadPreviewQuality);
+	const [compositionMode, setCompositionMode] = useState(false);
+	const frameRef = useRef<HTMLDivElement>(null);
+	const [frameSize, setFrameSize] = useState<{ width: number; height: number } | null>(null);
+
+	useEffect(() => {
+		const frame = frameRef.current;
+		if (!frame) return;
+		const update = () =>
+			setFrameSize(
+				frame.clientWidth > 0 && frame.clientHeight > 0
+					? { width: frame.clientWidth, height: frame.clientHeight }
+					: null,
+			);
+		update();
+		const observer = new ResizeObserver(update);
+		observer.observe(frame);
+		return () => observer.disconnect();
+	}, []);
+
+	const sourceVideo = videoPlaybackRef.current?.video;
+	const compositionVideo =
+		compositionMode && sourceVideo && sourceVideo.videoWidth > 0 && frameSize
+			? { width: sourceVideo.videoWidth, height: sourceVideo.videoHeight }
+			: null;
 
 	return (
 		<div className="flex min-h-0 min-w-0 flex-1 flex-col">
@@ -163,6 +197,35 @@ export function EditorPreviewPanel(props: Props) {
 						<Button
 							variant="ghost"
 							size="sm"
+							onClick={() => setCompositionMode((active) => !active)}
+							aria-pressed={compositionMode}
+							className={`h-7 gap-1.5 px-2 text-xs ${compositionMode ? "bg-foreground/10" : ""}`}
+						>
+							<BoundingBox className="h-3.5 w-3.5" />
+							<span className="font-medium">{t("editor.composition.title")}</span>
+							{appearance.composition.screenRect ? (
+								<span className="h-1.5 w-1.5 rounded-full bg-[#2563EB]" />
+							) : null}
+						</Button>
+						{compositionMode && appearance.composition.screenRect ? (
+							<Button
+								variant="ghost"
+								size="sm"
+								onClick={() =>
+									appearance.setComposition({
+										...appearance.composition,
+										screenRect: null,
+									})
+								}
+								className="h-7 gap-1.5 px-2 text-xs"
+							>
+								<span className="font-medium">{t("editor.composition.reset")}</span>
+							</Button>
+						) : null}
+						<div className="h-4 w-px bg-foreground/20" />
+						<Button
+							variant="ghost"
+							size="sm"
 							onClick={handleOpenCropEditor}
 							className="h-7 gap-1.5 px-2 text-xs"
 						>
@@ -182,6 +245,7 @@ export function EditorPreviewPanel(props: Props) {
 							style={{ containerType: "size" }}
 						>
 							<div
+								ref={frameRef}
 								className="editor-preview-frame relative"
 								style={{
 									width: `min(100cqw, calc(100cqh * ${previewAspectRatioValue}))`,
@@ -230,6 +294,30 @@ export function EditorPreviewPanel(props: Props) {
 											annotationCommands.handleAnnotationSizeChange,
 									}}
 								/>
+								{compositionVideo && frameSize ? (
+									<CompositionOverlay
+										label={t("editor.composition.screenFrame")}
+										aspectRatio={getCroppedVideoAspect(
+											compositionVideo.width,
+											compositionVideo.height,
+											appearance.cropRegion,
+										)}
+										rect={getEffectiveScreenRect({
+											screenRect: appearance.composition.screenRect,
+											padding: appearance.padding,
+											cropRegion: appearance.cropRegion,
+											videoWidth: compositionVideo.width,
+											videoHeight: compositionVideo.height,
+											canvas: frameSize,
+										})}
+										onChange={(rect) =>
+											appearance.setComposition({
+												...appearance.composition,
+												screenRect: rect,
+											})
+										}
+									/>
+								) : null}
 							</div>
 						</div>
 					</div>

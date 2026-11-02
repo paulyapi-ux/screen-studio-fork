@@ -187,6 +187,11 @@
 	"export": {
 		"processingAudioEdits": "Processando áudio com edições de velocidade/sobreposição"
 	},
+	"composition": {
+		"title": "Composição",
+		"reset": "Redefinir composição",
+		"screenFrame": "Posição e tamanho da tela"
+	},
 	"previewQuality": {
 		"label": "Prévia",
 		"full": "Completa",

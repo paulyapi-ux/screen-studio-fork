@@ -187,6 +187,11 @@
 	"export": {
 		"processingAudioEdits": "正在處理帶有速度/疊加編輯的音訊"
 	},
+	"composition": {
+		"title": "構圖",
+		"reset": "重設構圖",
+		"screenFrame": "螢幕位置與大小"
+	},
 	"previewQuality": {
 		"label": "預覽",
 		"full": "完整",

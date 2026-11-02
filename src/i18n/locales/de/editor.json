@@ -186,6 +186,11 @@
 	"export": {
 		"processingAudioEdits": "Audio mit Geschwindigkeits-/Overlay-Bearbeitungen wird verarbeitet"
 	},
+	"composition": {
+		"title": "Layout",
+		"reset": "Layout zurücksetzen",
+		"screenFrame": "Position und Größe des Bildschirms"
+	},
 	"previewQuality": {
 		"label": "Vorschau",
 		"full": "Voll",

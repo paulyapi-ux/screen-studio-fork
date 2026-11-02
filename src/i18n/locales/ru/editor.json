@@ -187,6 +187,11 @@
 	"export": {
 		"processingAudioEdits": "Обработка звука (скорость, наложения)"
 	},
+	"composition": {
+		"title": "Композиция",
+		"reset": "Сбросить композицию",
+		"screenFrame": "Положение и размер экрана"
+	},
 	"previewQuality": {
 		"label": "Предпросмотр",
 		"full": "Полное",
