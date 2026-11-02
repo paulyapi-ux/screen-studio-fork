@@ -190,7 +190,8 @@
 	"composition": {
 		"title": "Composizione",
 		"reset": "Reimposta la composizione",
-		"screenFrame": "Posizione e dimensione dello schermo"
+		"screenFrame": "Posizione e dimensione dello schermo",
+		"webcamFrame": "Posizione e dimensione della webcam"
 	},
 	"previewQuality": {
 		"label": "Anteprima",

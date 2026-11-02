@@ -189,7 +189,8 @@
 	"composition": {
 		"title": "Layout",
 		"reset": "Layout zurücksetzen",
-		"screenFrame": "Position und Größe des Bildschirms"
+		"screenFrame": "Position und Größe des Bildschirms",
+		"webcamFrame": "Position und Größe der Webcam"
 	},
 	"previewQuality": {
 		"label": "Vorschau",

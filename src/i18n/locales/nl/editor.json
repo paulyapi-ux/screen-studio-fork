@@ -191,7 +191,8 @@
 	"composition": {
 		"title": "Compositie",
 		"reset": "Compositie herstellen",
-		"screenFrame": "Positie en grootte van het scherm"
+		"screenFrame": "Positie en grootte van het scherm",
+		"webcamFrame": "Positie en grootte van de webcam"
 	},
 	"previewQuality": {
 		"label": "Voorbeeld",

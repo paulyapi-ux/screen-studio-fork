@@ -84,6 +84,9 @@ Essai de l'encodeur matériel avant chaque enregistrement, bascule automatique v
 
 - **Écrit (étape 5a, 02/11), à tester** : bouton « Composition » au-dessus de l'aperçu ; un cadre déplaçable (coins pour redimensionner, mêmes proportions que la vidéo) avec **magnétisme** sur les bords et le centre du canevas et **guides** (Alt = déplacement libre) ; « Réinitialiser la composition » revient à la disposition classique. Le cadre libre est sauvegardé dans le projet et pris en compte par l'aperçu et l'export. Pas encore : webcam déplaçable (5b), grille et cadenas (5c), compositions sauvegardées (5d).
 
+- **5a testée et validée (02/11)** : cadre de l'écran, magnétisme, export et sauvegarde OK.
+- **Écrit (étape 5b, 02/11), à tester** : la webcam a son cadre dans le mode Composition (déplacer, redimensionner par les coins, mêmes proportions). Écran et webcam s'attirent mutuellement (côte à côte, empilés) avec les guides. Les réglages existants de la webcam (position « personnalisée », taille) sont mis à jour par le cadre.
+
 ## Ordre de construction (validé le 27/10/2026, rien n'est commencé)
 1. Qualité d'aperçu. 2. Secours d'encodeur Windows (à tester sur le PC). 3. Raccourcis globaux + retour visuel. 4. Frappe et zoom.
 5. Composition libre, en quatre sous-étapes : cadre libre de l'écran, webcam déplaçable, grille + magnétisme + cadenas, compositions sauvegardées.

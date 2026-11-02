@@ -1,6 +1,7 @@
 import type { NormalizedRect } from "@/lib/composition/geometry";
 import { DEFAULT_WEBCAM_SIZE, type WebcamOverlaySettings } from "./types";
 import {
+	getCropMatchedWebcamHeightPercent,
 	getWebcamOverlayDimensionsPx,
 	getWebcamOverlayPosition,
 	scaleWebcamOverlayPixels,
@@ -20,13 +21,25 @@ function getSettingsPercents(webcam: WebcamOverlaySettings) {
 	};
 }
 
-/** Where the webcam sits on the canvas, as fractions of the canvas (at zoom 1). */
+/**
+ * Where the webcam sits on the canvas, as fractions of the canvas (at zoom 1). `sourceSize` is
+ * the webcam video's pixel size: when the webcam is cropped and square in the settings, the
+ * preview derives its height from the crop, and so does this.
+ */
 export function getWebcamRectFraction(
 	webcam: WebcamOverlaySettings,
 	canvas: { width: number; height: number },
+	sourceSize?: { width: number; height: number } | null,
 ): NormalizedRect {
 	const margin = scaleWebcamOverlayPixels(webcam.margin ?? 0, canvas.width);
-	const { widthPercent, heightPercent } = getSettingsPercents(webcam);
+	const { widthPercent, heightPercent: rawHeightPercent } = getSettingsPercents(webcam);
+	const heightPercent = getCropMatchedWebcamHeightPercent(
+		widthPercent,
+		rawHeightPercent,
+		sourceSize?.width,
+		sourceSize?.height,
+		webcam.cropRegion,
+	);
 	const size = getWebcamOverlayDimensionsPx({
 		containerWidth: canvas.width,
 		containerHeight: canvas.height,
@@ -72,7 +85,12 @@ export function getWebcamSettingsFromRect(
 	const positionY =
 		availableHeight > 0 ? clamp((rect.y * canvas.height - margin) / availableHeight, 0, 1) : 0;
 	const width = clamp((widthPx / minDimension) * 100, MIN_PERCENT, MAX_PERCENT);
-	const height = clamp((heightPx / minDimension) * 100, MIN_PERCENT, MAX_PERCENT);
+	let height = clamp((heightPx / minDimension) * 100, MIN_PERCENT, MAX_PERCENT);
+	// Equal width and height tells the preview to derive the height from the webcam crop. The
+	// user drew an exact shape here, so keep it by making the two differ imperceptibly.
+	if (Math.abs(width - height) <= 0.001) {
+		height = height >= MAX_PERCENT ? height - 0.002 : height + 0.002;
+	}
 
 	return {
 		...webcam,

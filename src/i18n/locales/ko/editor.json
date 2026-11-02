@@ -191,7 +191,8 @@
 	"composition": {
 		"title": "구성",
 		"reset": "구성 초기화",
-		"screenFrame": "화면 위치 및 크기"
+		"screenFrame": "화면 위치 및 크기",
+		"webcamFrame": "웹캠 위치 및 크기"
 	},
 	"previewQuality": {
 		"label": "미리보기",

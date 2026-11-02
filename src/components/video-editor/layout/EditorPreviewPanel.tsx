@@ -53,7 +53,8 @@ import type { useAppearanceState } from "../state/useAppearanceState";
 import type { useTimelineState } from "../state/useTimelineState";
 import type { TimelineEditorHandle } from "../timeline/TimelineEditor";
 import type { VideoPlaybackRef } from "../VideoPlayback";
-import { CompositionOverlay } from "./CompositionOverlay";
+import { getWebcamRectFraction, getWebcamSettingsFromRect } from "../webcamComposition";
+import { type CompositionFrame, CompositionOverlay } from "./CompositionOverlay";
 import { EditorVideoPreview } from "./EditorVideoPreview";
 
 type Props = {
@@ -159,6 +160,47 @@ export function EditorPreviewPanel(props: Props) {
 		compositionMode && sourceVideo && sourceVideo.videoWidth > 0 && frameSize
 			? { width: sourceVideo.videoWidth, height: sourceVideo.videoHeight }
 			: null;
+
+	const compositionFrames: CompositionFrame[] = [];
+	if (compositionVideo && frameSize) {
+		compositionFrames.push({
+			id: "screen",
+			label: t("editor.composition.screenFrame"),
+			aspectRatio: getCroppedVideoAspect(
+				compositionVideo.width,
+				compositionVideo.height,
+				appearance.cropRegion,
+			),
+			rect: getEffectiveScreenRect({
+				screenRect: appearance.composition.screenRect,
+				padding: appearance.padding,
+				cropRegion: appearance.cropRegion,
+				videoWidth: compositionVideo.width,
+				videoHeight: compositionVideo.height,
+				canvas: frameSize,
+			}),
+			onChange: (rect) =>
+				appearance.setComposition({ ...appearance.composition, screenRect: rect }),
+		});
+
+		const webcam = appearance.webcam;
+		if (webcam.enabled && webcam.sourcePath) {
+			const webcamRect = getWebcamRectFraction(
+				webcam,
+				frameSize,
+				videoPlaybackRef.current?.webcamVideoDimensions,
+			);
+			compositionFrames.push({
+				id: "webcam",
+				label: t("editor.composition.webcamFrame"),
+				aspectRatio:
+					(webcamRect.width * frameSize.width) / (webcamRect.height * frameSize.height),
+				rect: webcamRect,
+				onChange: (rect) =>
+					appearance.setWebcam(getWebcamSettingsFromRect(webcam, rect, frameSize)),
+			});
+		}
+	}
 
 	return (
 		<div className="flex min-h-0 min-w-0 flex-1 flex-col">
@@ -295,28 +337,7 @@ export function EditorPreviewPanel(props: Props) {
 									}}
 								/>
 								{compositionVideo && frameSize ? (
-									<CompositionOverlay
-										label={t("editor.composition.screenFrame")}
-										aspectRatio={getCroppedVideoAspect(
-											compositionVideo.width,
-											compositionVideo.height,
-											appearance.cropRegion,
-										)}
-										rect={getEffectiveScreenRect({
-											screenRect: appearance.composition.screenRect,
-											padding: appearance.padding,
-											cropRegion: appearance.cropRegion,
-											videoWidth: compositionVideo.width,
-											videoHeight: compositionVideo.height,
-											canvas: frameSize,
-										})}
-										onChange={(rect) =>
-											appearance.setComposition({
-												...appearance.composition,
-												screenRect: rect,
-											})
-										}
-									/>
+									<CompositionOverlay frames={compositionFrames} />
 								) : null}
 							</div>
 						</div>

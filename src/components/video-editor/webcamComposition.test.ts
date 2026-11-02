@@ -32,4 +32,29 @@ describe("webcam composition conversion", () => {
 		expect(back.x).toBeCloseTo(target.x, 3);
 		expect(back.y).toBeCloseTo(target.y, 3);
 	});
+
+	it("derives the height from the crop like the preview does", () => {
+		const cropped = {
+			...DEFAULT_WEBCAM_OVERLAY,
+			enabled: true,
+			width: 30,
+			height: 30,
+			size: 30,
+			cropRegion: { x: 0, y: 0, width: 0.5, height: 1 },
+		};
+		const source = { width: 1920, height: 1080 };
+		const withSource = getWebcamRectFraction(cropped, CANVAS, source);
+		const without = getWebcamRectFraction(cropped, CANVAS);
+		// Half the width of a 16:9 picture is taller than wide: the cropped height differs.
+		expect(withSource.height).not.toBeCloseTo(without.height, 3);
+	});
+
+	it("keeps an exact square from being re-derived from the crop", () => {
+		const settings = getWebcamSettingsFromRect(
+			DEFAULT_WEBCAM_OVERLAY,
+			{ x: 0.1, y: 0.1, width: 0.2, height: 0.2 * (1920 / 1080) },
+			CANVAS,
+		);
+		expect(Math.abs(settings.width - settings.height)).toBeGreaterThan(0.001);
+	});
 });

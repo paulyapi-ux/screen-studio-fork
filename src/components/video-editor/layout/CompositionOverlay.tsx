@@ -7,19 +7,20 @@ import {
 	snapResize,
 } from "@/lib/composition/geometry";
 
-type Drag =
-	| { kind: "move"; start: NormalizedRect; pointerX: number; pointerY: number }
-	| { kind: "resize"; handle: ResizeHandle; start: NormalizedRect };
-
-type Props = {
-	/** Where the screen is now, as fractions of the canvas. */
+export type CompositionFrame = {
+	id: string;
+	/** Where the source is now, as fractions of the canvas. */
 	rect: NormalizedRect;
-	/** Width / height of the screen picture: the frame never gets squashed. */
+	/** Width / height of the source picture: the frame never gets squashed. */
 	aspectRatio: number;
+	label: string;
 	/** Called while the frame is dragged or resized. */
 	onChange: (rect: NormalizedRect) => void;
-	label: string;
 };
+
+type Drag =
+	| { id: string; kind: "move"; start: NormalizedRect; pointerX: number; pointerY: number }
+	| { id: string; kind: "resize"; handle: ResizeHandle; start: NormalizedRect };
 
 const CORNERS: Array<{ handle: ResizeHandle; className: string; cursor: string }> = [
 	{ handle: "nw", className: "-left-1.5 -top-1.5", cursor: "nwse-resize" },
@@ -29,11 +30,12 @@ const CORNERS: Array<{ handle: ResizeHandle; className: string; cursor: string }
 ];
 
 /**
- * Draggable frame drawn over the preview in composition mode. Dragging moves the screen,
- * the corners resize it (same proportions). The edges and the center snap to the canvas, and
- * guide lines show what it snapped to; hold Alt to move freely.
+ * Draggable frames drawn over the preview in composition mode, one per source (screen, webcam).
+ * Dragging moves a source, the corners resize it (same proportions). Edges and centers snap to
+ * the canvas and to the other sources, with guide lines showing what it snapped to; hold Alt
+ * to move freely.
  */
-export function CompositionOverlay({ rect, aspectRatio, onChange, label }: Props) {
+export function CompositionOverlay({ frames }: { frames: CompositionFrame[] }) {
 	const rootRef = useRef<HTMLDivElement>(null);
 	const dragRef = useRef<Drag | null>(null);
 	const [guides, setGuides] = useState<SnapGuide[]>([]);
@@ -50,7 +52,11 @@ export function CompositionOverlay({ rect, aspectRatio, onChange, label }: Props
 		};
 	};
 
-	const beginDrag = (event: ReactPointerEvent<HTMLElement>, target: ResizeHandle | "move") => {
+	const beginDrag = (
+		event: ReactPointerEvent<HTMLElement>,
+		frame: CompositionFrame,
+		target: ResizeHandle | "move",
+	) => {
 		const point = toFractions(event);
 		if (!point) return;
 		event.stopPropagation();
@@ -58,15 +64,27 @@ export function CompositionOverlay({ rect, aspectRatio, onChange, label }: Props
 		event.currentTarget.setPointerCapture(event.pointerId);
 		dragRef.current =
 			target === "move"
-				? { kind: "move", start: rect, pointerX: point.x, pointerY: point.y }
-				: { kind: "resize", handle: target, start: rect };
+				? {
+						id: frame.id,
+						kind: "move",
+						start: frame.rect,
+						pointerX: point.x,
+						pointerY: point.y,
+					}
+				: { id: frame.id, kind: "resize", handle: target, start: frame.rect };
 	};
 
 	const handleMove = (event: ReactPointerEvent<HTMLElement>) => {
 		const drag = dragRef.current;
 		const point = toFractions(event);
 		if (!drag || !point) return;
-		const snapping = { canvas: point.canvas, others: [], disabled: event.altKey };
+		const frame = frames.find((candidate) => candidate.id === drag.id);
+		if (!frame) return;
+		const snapping = {
+			canvas: point.canvas,
+			others: frames.filter((other) => other.id !== drag.id).map((other) => other.rect),
+			disabled: event.altKey,
+		};
 		if (drag.kind === "move") {
 			const result = snapMove(
 				{
@@ -77,17 +95,17 @@ export function CompositionOverlay({ rect, aspectRatio, onChange, label }: Props
 				snapping,
 			);
 			setGuides(result.guides);
-			onChange(result.rect);
+			frame.onChange(result.rect);
 			return;
 		}
 		const result = snapResize(
 			drag.start,
 			drag.handle,
 			{ x: point.x, y: point.y },
-			{ ...snapping, aspectRatio },
+			{ ...snapping, aspectRatio: frame.aspectRatio },
 		);
 		setGuides(result.guides);
-		onChange(result.rect);
+		frame.onChange(result.rect);
 	};
 
 	const endDrag = (event: ReactPointerEvent<HTMLElement>) => {
@@ -118,33 +136,37 @@ export function CompositionOverlay({ rect, aspectRatio, onChange, label }: Props
 					/>
 				),
 			)}
-			<div
-				role="group"
-				aria-label={label}
-				className="pointer-events-auto absolute cursor-move touch-none border-2 border-[#2563EB] bg-[#2563EB]/5"
-				style={{
-					left: `${rect.x * 100}%`,
-					top: `${rect.y * 100}%`,
-					width: `${rect.width * 100}%`,
-					height: `${rect.height * 100}%`,
-				}}
-				onPointerDown={(event) => beginDrag(event, "move")}
-				onPointerMove={handleMove}
-				onPointerUp={endDrag}
-				onPointerCancel={endDrag}
-			>
-				{CORNERS.map(({ handle, className, cursor }) => (
-					<div
-						key={handle}
-						className={`absolute size-3 rounded-sm border border-white bg-[#2563EB] ${className}`}
-						style={{ cursor }}
-						onPointerDown={(event) => beginDrag(event, handle)}
-						onPointerMove={handleMove}
-						onPointerUp={endDrag}
-						onPointerCancel={endDrag}
-					/>
-				))}
-			</div>
+			{frames.map((frame) => (
+				<div
+					key={frame.id}
+					role="group"
+					aria-label={frame.label}
+					title={frame.label}
+					className="pointer-events-auto absolute cursor-move touch-none border-2 border-[#2563EB] bg-[#2563EB]/5"
+					style={{
+						left: `${frame.rect.x * 100}%`,
+						top: `${frame.rect.y * 100}%`,
+						width: `${frame.rect.width * 100}%`,
+						height: `${frame.rect.height * 100}%`,
+					}}
+					onPointerDown={(event) => beginDrag(event, frame, "move")}
+					onPointerMove={handleMove}
+					onPointerUp={endDrag}
+					onPointerCancel={endDrag}
+				>
+					{CORNERS.map(({ handle, className, cursor }) => (
+						<div
+							key={handle}
+							className={`absolute size-3 rounded-sm border border-white bg-[#2563EB] ${className}`}
+							style={{ cursor }}
+							onPointerDown={(event) => beginDrag(event, frame, handle)}
+							onPointerMove={handleMove}
+							onPointerUp={endDrag}
+							onPointerCancel={endDrag}
+						/>
+					))}
+				</div>
+			))}
 		</div>
 	);
 }

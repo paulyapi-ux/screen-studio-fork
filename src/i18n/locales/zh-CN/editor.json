@@ -190,7 +190,8 @@
 	"composition": {
 		"title": "构图",
 		"reset": "重置构图",
-		"screenFrame": "屏幕位置和大小"
+		"screenFrame": "屏幕位置和大小",
+		"webcamFrame": "摄像头位置和大小"
 	},
 	"previewQuality": {
 		"label": "预览",

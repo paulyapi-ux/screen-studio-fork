@@ -308,6 +308,8 @@ export interface VideoPlaybackRef {
 	pause: () => void;
 	refreshFrame: () => Promise<void>;
 	cancelCaptionEdit: () => void;
+	/** Pixel size of the webcam video once loaded (null before). */
+	readonly webcamVideoDimensions: { width: number; height: number } | null;
 }
 
 const VideoPlayback = forwardRef<VideoPlaybackRef, VideoPlaybackProps>(
@@ -430,6 +432,8 @@ const VideoPlayback = forwardRef<VideoPlaybackRef, VideoPlaybackProps>(
 			width: number;
 			height: number;
 		} | null>(null);
+		const webcamVideoDimensionsRef = useRef(webcamVideoDimensions);
+		webcamVideoDimensionsRef.current = webcamVideoDimensions;
 		const webcamSynchronizedPathRef = useRef<string | null>(null);
 		const [webcamSynchronizedPath, setWebcamSynchronizedPath] = useState<string | null>(null);
 		const webcamMediaSynchronized =
@@ -1131,6 +1135,9 @@ const VideoPlayback = forwardRef<VideoPlaybackRef, VideoPlaybackProps>(
 				return clipPlaybackRef.current?.isPlaying ?? false;
 			},
 			seekTimeline: (time) => clipPlaybackRef.current?.seek(time),
+			get webcamVideoDimensions() {
+				return webcamVideoDimensionsRef.current;
+			},
 			video: videoRef.current,
 			app: appRef.current,
 			videoSprite: videoSpriteRef.current,

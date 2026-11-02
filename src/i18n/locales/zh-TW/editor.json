@@ -190,7 +190,8 @@
 	"composition": {
 		"title": "構圖",
 		"reset": "重設構圖",
-		"screenFrame": "螢幕位置與大小"
+		"screenFrame": "螢幕位置與大小",
+		"webcamFrame": "網路攝影機位置與大小"
 	},
 	"previewQuality": {
 		"label": "預覽",
