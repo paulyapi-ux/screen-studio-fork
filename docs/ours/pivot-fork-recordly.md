@@ -93,6 +93,8 @@ Essai de l'encodeur matériel avant chaque enregistrement, bascule automatique v
 - **5c testée et validée (02/11).**
 - **Écrit (étape 5d, 02/11), à tester** : les compositions sauvegardées **réutilisent le menu « Presets » de Recordly** (enregistrer sous un nom, appliquer, supprimer). Un preset contient désormais aussi la disposition (cadre libre de l'écran + cadenas ; pas la grille, qui est un outil d'affichage) et le **format**. Le menu n'affiche que les presets faits pour le **format courant** (règle du plan). Les anciens presets sans disposition se comportent comme avant (disposition classique). Aucune composition par défaut.
 
+- **5d testée et validée (02/11)** (le bouton « Presets » de Recordly était caché ; il est maintenant visible, à gauche d'Exporter). **L'étape 5 (composition libre) est terminée.**
+
 ## Ordre de construction (validé le 27/10/2026, rien n'est commencé)
 1. Qualité d'aperçu. 2. Secours d'encodeur Windows (à tester sur le PC). 3. Raccourcis globaux + retour visuel. 4. Frappe et zoom.
 5. Composition libre, en quatre sous-étapes : cadre libre de l'écran, webcam déplaçable, grille + magnétisme + cadenas, compositions sauvegardées.
