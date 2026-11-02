@@ -87,6 +87,9 @@ Essai de l'encodeur matériel avant chaque enregistrement, bascule automatique v
 - **5a testée et validée (02/11)** : cadre de l'écran, magnétisme, export et sauvegarde OK.
 - **Écrit (étape 5b, 02/11), à tester** : la webcam a son cadre dans le mode Composition (déplacer, redimensionner par les coins, mêmes proportions). Écran et webcam s'attirent mutuellement (côte à côte, empilés) avec les guides. Les réglages existants de la webcam (position « personnalisée », taille) sont mis à jour par le cadre.
 
+- **5b testée et validée (02/11).**
+- **Écrit (étape 5c, 02/11), à tester** : bouton **Grille** (lignes visibles seulement quand on l'allume ; l'aimantation sur la grille est active quand elle est allumée) et **un cadenas par source** sur chaque cadre (position et taille bloquées ; l'habillage reste modifiable ; pas de cadenas global). Les cadenas et la grille sont sauvegardés dans le projet. Un écran verrouillé ne peut pas non plus être remis à la disposition classique.
+
 ## Ordre de construction (validé le 27/10/2026, rien n'est commencé)
 1. Qualité d'aperçu. 2. Secours d'encodeur Windows (à tester sur le PC). 3. Raccourcis globaux + retour visuel. 4. Frappe et zoom.
 5. Composition libre, en quatre sous-étapes : cadre libre de l'écran, webcam déplaçable, grille + magnétisme + cadenas, compositions sauvegardées.

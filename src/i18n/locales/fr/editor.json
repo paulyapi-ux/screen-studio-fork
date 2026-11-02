@@ -191,7 +191,10 @@
 		"title": "Composition",
 		"reset": "Réinitialiser la disposition",
 		"screenFrame": "Position et taille de l'écran",
-		"webcamFrame": "Position et taille de la webcam"
+		"webcamFrame": "Position et taille de la webcam",
+		"grid": "Grille",
+		"lock": "Verrouiller la position et la taille",
+		"unlock": "Déverrouiller la position et la taille"
 	},
 	"previewQuality": {
 		"label": "Aperçu",

@@ -190,7 +190,10 @@
 		"title": "Layout",
 		"reset": "Layout zurücksetzen",
 		"screenFrame": "Position und Größe des Bildschirms",
-		"webcamFrame": "Position und Größe der Webcam"
+		"webcamFrame": "Position und Größe der Webcam",
+		"grid": "Raster",
+		"lock": "Position und Größe sperren",
+		"unlock": "Position und Größe entsperren"
 	},
 	"previewQuality": {
 		"label": "Vorschau",

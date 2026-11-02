@@ -192,7 +192,10 @@
 		"title": "구성",
 		"reset": "구성 초기화",
 		"screenFrame": "화면 위치 및 크기",
-		"webcamFrame": "웹캠 위치 및 크기"
+		"webcamFrame": "웹캠 위치 및 크기",
+		"grid": "격자",
+		"lock": "위치와 크기 잠금",
+		"unlock": "위치와 크기 잠금 해제"
 	},
 	"previewQuality": {
 		"label": "미리보기",

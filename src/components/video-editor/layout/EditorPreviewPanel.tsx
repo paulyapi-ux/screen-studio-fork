@@ -18,6 +18,7 @@ import {
 	CaretDown,
 	Check,
 	Crop,
+	GridIcon,
 	MagicWand,
 	MagnifyingGlassPlus,
 	Pause,
@@ -35,6 +36,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Slider } from "@/components/ui/slider";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import type { useI18n } from "@/contexts/I18nContext";
+import { isElementLocked, toggleElementLock } from "@/lib/composition/geometry";
 import { ASPECT_RATIOS, type AspectRatio, getAspectRatioLabel } from "@/utils/aspectRatioUtils";
 import type { useVideoEditorAudio } from "../audio/useVideoEditorAudio";
 import type { CaptionEditTarget } from "../captionEditing";
@@ -161,6 +163,14 @@ export function EditorPreviewPanel(props: Props) {
 			? { width: sourceVideo.videoWidth, height: sourceVideo.videoHeight }
 			: null;
 
+	const lockLabel = (locked: boolean) =>
+		locked ? t("editor.composition.unlock") : t("editor.composition.lock");
+	const toggleLock = (id: string) =>
+		appearance.setComposition({
+			...appearance.composition,
+			locks: toggleElementLock(appearance.composition.locks, id as "screen" | "webcam"),
+		});
+
 	const compositionFrames: CompositionFrame[] = [];
 	if (compositionVideo && frameSize) {
 		compositionFrames.push({
@@ -179,6 +189,8 @@ export function EditorPreviewPanel(props: Props) {
 				videoHeight: compositionVideo.height,
 				canvas: frameSize,
 			}),
+			locked: isElementLocked(appearance.composition.locks, "screen"),
+			lockLabel: lockLabel(isElementLocked(appearance.composition.locks, "screen")),
 			onChange: (rect) =>
 				appearance.setComposition({ ...appearance.composition, screenRect: rect }),
 		});
@@ -196,6 +208,8 @@ export function EditorPreviewPanel(props: Props) {
 				aspectRatio:
 					(webcamRect.width * frameSize.width) / (webcamRect.height * frameSize.height),
 				rect: webcamRect,
+				locked: isElementLocked(appearance.composition.locks, "webcam"),
+				lockLabel: lockLabel(isElementLocked(appearance.composition.locks, "webcam")),
 				onChange: (rect) =>
 					appearance.setWebcam(getWebcamSettingsFromRect(webcam, rect, frameSize)),
 			});
@@ -249,7 +263,29 @@ export function EditorPreviewPanel(props: Props) {
 								<span className="h-1.5 w-1.5 rounded-full bg-[#2563EB]" />
 							) : null}
 						</Button>
-						{compositionMode && appearance.composition.screenRect ? (
+						{compositionMode ? (
+							<Button
+								variant="ghost"
+								size="sm"
+								aria-pressed={appearance.composition.grid.enabled}
+								onClick={() =>
+									appearance.setComposition({
+										...appearance.composition,
+										grid: {
+											...appearance.composition.grid,
+											enabled: !appearance.composition.grid.enabled,
+										},
+									})
+								}
+								className={`h-7 gap-1.5 px-2 text-xs ${appearance.composition.grid.enabled ? "bg-foreground/10" : ""}`}
+							>
+								<GridIcon className="h-3.5 w-3.5" />
+								<span className="font-medium">{t("editor.composition.grid")}</span>
+							</Button>
+						) : null}
+						{compositionMode &&
+						appearance.composition.screenRect &&
+						!isElementLocked(appearance.composition.locks, "screen") ? (
 							<Button
 								variant="ghost"
 								size="sm"
@@ -337,7 +373,12 @@ export function EditorPreviewPanel(props: Props) {
 									}}
 								/>
 								{compositionVideo && frameSize ? (
-									<CompositionOverlay frames={compositionFrames} />
+									<CompositionOverlay
+										frames={compositionFrames}
+										grid={appearance.composition.grid}
+										canvas={frameSize}
+										onToggleLock={toggleLock}
+									/>
 								) : null}
 							</div>
 						</div>

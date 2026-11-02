@@ -191,7 +191,10 @@
 		"title": "Composição",
 		"reset": "Redefinir composição",
 		"screenFrame": "Posição e tamanho da tela",
-		"webcamFrame": "Posição e tamanho da webcam"
+		"webcamFrame": "Posição e tamanho da webcam",
+		"grid": "Grade",
+		"lock": "Bloquear posição e tamanho",
+		"unlock": "Desbloquear posição e tamanho"
 	},
 	"previewQuality": {
 		"label": "Prévia",

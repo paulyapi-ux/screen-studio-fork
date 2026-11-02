@@ -192,7 +192,10 @@
 		"title": "Compositie",
 		"reset": "Compositie herstellen",
 		"screenFrame": "Positie en grootte van het scherm",
-		"webcamFrame": "Positie en grootte van de webcam"
+		"webcamFrame": "Positie en grootte van de webcam",
+		"grid": "Raster",
+		"lock": "Positie en grootte vergrendelen",
+		"unlock": "Positie en grootte ontgrendelen"
 	},
 	"previewQuality": {
 		"label": "Voorbeeld",

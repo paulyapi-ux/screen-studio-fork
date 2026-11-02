@@ -191,7 +191,10 @@
 		"title": "Layout",
 		"reset": "Reset layout",
 		"screenFrame": "Screen position and size",
-		"webcamFrame": "Webcam position and size"
+		"webcamFrame": "Webcam position and size",
+		"grid": "Grid",
+		"lock": "Lock position and size",
+		"unlock": "Unlock position and size"
 	},
 	"previewQuality": {
 		"label": "Preview",

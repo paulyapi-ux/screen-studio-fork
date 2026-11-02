@@ -1,5 +1,9 @@
 import { type PointerEvent as ReactPointerEvent, useEffect, useRef, useState } from "react";
+import { LockIcon, LockOpenIcon } from "@/components/ui/icons";
 import {
+	type CanvasSize,
+	type CompositionGrid,
+	getGridLines,
 	type NormalizedRect,
 	type ResizeHandle,
 	type SnapGuide,
@@ -14,6 +18,9 @@ export type CompositionFrame = {
 	/** Width / height of the source picture: the frame never gets squashed. */
 	aspectRatio: number;
 	label: string;
+	/** A locked source cannot be moved or resized (its look can still be changed). */
+	locked: boolean;
+	lockLabel: string;
 	/** Called while the frame is dragged or resized. */
 	onChange: (rect: NormalizedRect) => void;
 };
@@ -35,7 +42,17 @@ const CORNERS: Array<{ handle: ResizeHandle; className: string; cursor: string }
  * the canvas and to the other sources, with guide lines showing what it snapped to; hold Alt
  * to move freely.
  */
-export function CompositionOverlay({ frames }: { frames: CompositionFrame[] }) {
+export function CompositionOverlay({
+	frames,
+	grid,
+	canvas,
+	onToggleLock,
+}: {
+	frames: CompositionFrame[];
+	grid: CompositionGrid;
+	canvas: CanvasSize;
+	onToggleLock: (id: string) => void;
+}) {
 	const rootRef = useRef<HTMLDivElement>(null);
 	const dragRef = useRef<Drag | null>(null);
 	const [guides, setGuides] = useState<SnapGuide[]>([]);
@@ -57,6 +74,10 @@ export function CompositionOverlay({ frames }: { frames: CompositionFrame[] }) {
 		frame: CompositionFrame,
 		target: ResizeHandle | "move",
 	) => {
+		if (frame.locked) {
+			event.stopPropagation();
+			return;
+		}
 		const point = toFractions(event);
 		if (!point) return;
 		event.stopPropagation();
@@ -84,6 +105,7 @@ export function CompositionOverlay({ frames }: { frames: CompositionFrame[] }) {
 			canvas: point.canvas,
 			others: frames.filter((other) => other.id !== drag.id).map((other) => other.rect),
 			disabled: event.altKey,
+			grid,
 		};
 		if (drag.kind === "move") {
 			const result = snapMove(
@@ -121,6 +143,25 @@ export function CompositionOverlay({ frames }: { frames: CompositionFrame[] }) {
 
 	return (
 		<div ref={rootRef} className="pointer-events-none absolute inset-0 z-30">
+			{grid.enabled
+				? ["x", "y"].flatMap((axis) =>
+						getGridLines(grid, canvas, axis as "x" | "y").map((position) => (
+							<div
+								key={`grid-${axis}-${position}`}
+								className={
+									axis === "x"
+										? "absolute top-0 bottom-0 w-px bg-white/25"
+										: "absolute left-0 right-0 h-px bg-white/25"
+								}
+								style={
+									axis === "x"
+										? { left: `${position * 100}%` }
+										: { top: `${position * 100}%` }
+								}
+							/>
+						)),
+					)
+				: null}
 			{guides.map((guide) =>
 				guide.axis === "x" ? (
 					<div
@@ -142,7 +183,11 @@ export function CompositionOverlay({ frames }: { frames: CompositionFrame[] }) {
 					role="group"
 					aria-label={frame.label}
 					title={frame.label}
-					className="pointer-events-auto absolute cursor-move touch-none border-2 border-[#2563EB] bg-[#2563EB]/5"
+					className={`pointer-events-auto absolute touch-none border-2 ${
+						frame.locked
+							? "cursor-default border-[#f59e0b] bg-[#f59e0b]/5"
+							: "cursor-move border-[#2563EB] bg-[#2563EB]/5"
+					}`}
 					style={{
 						left: `${frame.rect.x * 100}%`,
 						top: `${frame.rect.y * 100}%`,
@@ -154,7 +199,27 @@ export function CompositionOverlay({ frames }: { frames: CompositionFrame[] }) {
 					onPointerUp={endDrag}
 					onPointerCancel={endDrag}
 				>
-					{CORNERS.map(({ handle, className, cursor }) => (
+					<button
+						type="button"
+						aria-label={frame.lockLabel}
+						aria-pressed={frame.locked}
+						title={frame.lockLabel}
+						className={`absolute left-1 top-1 flex size-6 items-center justify-center rounded-md text-white ${
+							frame.locked ? "bg-[#f59e0b]" : "bg-black/60 hover:bg-black/80"
+						}`}
+						onPointerDown={(event) => event.stopPropagation()}
+						onClick={(event) => {
+							event.stopPropagation();
+							onToggleLock(frame.id);
+						}}
+					>
+						{frame.locked ? (
+							<LockIcon weight="fill" className="size-3.5" />
+						) : (
+							<LockOpenIcon className="size-3.5" />
+						)}
+					</button>
+					{(frame.locked ? [] : CORNERS).map(({ handle, className, cursor }) => (
 						<div
 							key={handle}
 							className={`absolute size-3 rounded-sm border border-white bg-[#2563EB] ${className}`}

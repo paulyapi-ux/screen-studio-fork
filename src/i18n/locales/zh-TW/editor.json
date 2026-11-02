@@ -191,7 +191,10 @@
 		"title": "構圖",
 		"reset": "重設構圖",
 		"screenFrame": "螢幕位置與大小",
-		"webcamFrame": "網路攝影機位置與大小"
+		"webcamFrame": "網路攝影機位置與大小",
+		"grid": "格線",
+		"lock": "鎖定位置與大小",
+		"unlock": "解除鎖定位置與大小"
 	},
 	"previewQuality": {
 		"label": "預覽",
