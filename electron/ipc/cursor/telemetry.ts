@@ -4,6 +4,7 @@ import {
 	CURSOR_TELEMETRY_VERSION,
 	MAX_CURSOR_SAMPLES,
 } from "../constants";
+import { getSourceArea } from "../sourceArea";
 import {
 	activeCursorSamples,
 	currentCursorVisualType,
@@ -23,7 +24,6 @@ import {
 	setPendingCursorSamples,
 } from "../state";
 import type { CursorInteractionType, CursorTelemetryPoint, CursorVisualType } from "../types";
-import { getSourceArea } from "../sourceArea";
 import { getScreen, getTelemetryPathForVideo } from "../utils";
 
 export function clamp(value: number, min: number, max: number) {
@@ -61,7 +61,9 @@ export function normalizeCursorTelemetrySamples(rawSamples: unknown): CursorTele
 					point.interactionType === "right-click" ||
 					point.interactionType === "middle-click" ||
 					point.interactionType === "move" ||
-					point.interactionType === "mouseup"
+					point.interactionType === "mouseup" ||
+					point.interactionType === "key-text" ||
+					point.interactionType === "key-edit"
 						? point.interactionType
 						: undefined,
 				cursorType:

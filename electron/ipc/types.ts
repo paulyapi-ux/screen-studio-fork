@@ -127,7 +127,11 @@ export type CursorInteractionType =
 	| "double-click"
 	| "right-click"
 	| "middle-click"
-	| "mouseup";
+	| "mouseup"
+	/** A letter/digit/punctuation key was pressed (which key is never recorded). */
+	| "key-text"
+	/** Space, enter, backspace, delete or tab was pressed. */
+	| "key-edit";
 
 export interface CursorTelemetryPoint {
 	timeMs: number;
@@ -153,9 +157,14 @@ export type NativeMacWindowSource = {
 	ownerPid?: number;
 };
 
-export type HookEventName = "mousedown" | "mouseup" | "mousemove";
+export type HookEventName = "mousedown" | "mouseup" | "mousemove" | "keydown";
 
 export type HookMouseEvent = {
+	/** Keyboard events only. Used to classify the press; the key itself is never stored. */
+	keycode?: number;
+	ctrlKey?: boolean;
+	altKey?: boolean;
+	metaKey?: boolean;
 	button?: number;
 	mouseButton?: number;
 	x?: number;

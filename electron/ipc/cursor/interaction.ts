@@ -1,6 +1,7 @@
 import fs from "node:fs";
 import { createRequire } from "node:module";
 import path from "node:path";
+import { classifyKeyPress, type KeyCategory } from "../../../src/lib/typingActivity";
 import {
 	hasLoggedInteractionHookFailure,
 	interactionCaptureCleanup,
@@ -220,6 +221,25 @@ export function recordCursorMouseDown(button: 1 | 2 | 3) {
 	pushCursorSample(point.cx, point.cy, timeMs, interactionType);
 }
 
+/** Notes that a key was pressed (category only) at the current cursor position. */
+export function recordCursorKey(category: KeyCategory) {
+	if (!isCursorCaptureActive || isCursorCapturePaused()) {
+		return;
+	}
+
+	const point = getNormalizedCursorPoint();
+	if (!point) {
+		return;
+	}
+
+	pushCursorSample(
+		point.cx,
+		point.cy,
+		getCursorCaptureElapsedMs(),
+		category === "text" ? "key-text" : "key-edit",
+	);
+}
+
 export function recordCursorMouseUp() {
 	if (!isCursorCaptureActive || isCursorCapturePaused()) {
 		return;
@@ -276,6 +296,16 @@ export async function startInteractionCapture() {
 			recordCursorMouseUp();
 		};
 
+		const onKeyDown = (event: HookMouseEvent) => {
+			const category = classifyKeyPress({
+				keycode: typeof event.keycode === "number" ? event.keycode : -1,
+				ctrlKey: event.ctrlKey,
+				altKey: event.altKey,
+				metaKey: event.metaKey,
+			});
+			if (category) recordCursorKey(category);
+		};
+
 		const onMouseMove = (event: HookMouseEvent) => {
 			if (process.platform !== "linux" || !isCursorCaptureActive || isCursorCapturePaused()) {
 				return;
@@ -291,6 +321,7 @@ export async function startInteractionCapture() {
 
 		hook.on("mousedown", onMouseDown);
 		hook.on("mouseup", onMouseUp);
+		hook.on("keydown", onKeyDown);
 		if (process.platform === "linux") {
 			hook.on("mousemove", onMouseMove);
 		}
@@ -300,12 +331,14 @@ export async function startInteractionCapture() {
 				if (typeof hook.off === "function") {
 					hook.off("mousedown", onMouseDown);
 					hook.off("mouseup", onMouseUp);
+					hook.off("keydown", onKeyDown);
 					if (process.platform === "linux") {
 						hook.off("mousemove", onMouseMove);
 					}
 				} else if (typeof hook.removeListener === "function") {
 					hook.removeListener("mousedown", onMouseDown);
 					hook.removeListener("mouseup", onMouseUp);
+					hook.removeListener("keydown", onKeyDown);
 					if (process.platform === "linux") {
 						hook.removeListener("mousemove", onMouseMove);
 					}

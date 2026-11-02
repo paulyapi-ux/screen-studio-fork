@@ -1,3 +1,4 @@
+import { findTypingSessionEnd } from "@/lib/typingActivity";
 import type { CursorTelemetryPoint, ZoomFocus } from "../types";
 
 export const MIN_DWELL_DURATION_MS = 450;
@@ -412,9 +413,24 @@ export function buildInteractionZoomSuggestions(params: {
 	const reserved = [...reservedSpans].sort((a, b) => a.start - b.start);
 	const suggestions: SuggestedZoomRegion[] = [];
 
-	for (const cluster of clusters) {
+	for (const [clusterIndex, cluster] of clusters.entries()) {
 		const regionStart = Math.max(0, cluster.firstMs - padMs);
-		const regionEnd = Math.min(totalMs, cluster.lastMs + padMs);
+		const nextCluster = clusters[clusterIndex + 1];
+		// Clicking into a text field and typing keeps the zoom open while the typing goes on
+		// (never past the start of the next zoom).
+		const typingEndMs = findTypingSessionEnd(
+			normalizedSamples,
+			cluster.lastMs,
+			nextCluster?.firstMs,
+		);
+		const typingLimitMs = nextCluster ? Math.max(0, nextCluster.firstMs - padMs) : totalMs;
+		const regionEnd = Math.min(
+			totalMs,
+			Math.max(
+				cluster.lastMs + padMs,
+				typingEndMs === null ? 0 : Math.min(typingEndMs, typingLimitMs),
+			),
+		);
 
 		if (regionEnd <= regionStart) {
 			continue;

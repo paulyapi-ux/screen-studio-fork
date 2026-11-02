@@ -80,6 +80,8 @@ Essai de l'encodeur matériel avant chaque enregistrement, bascule automatique v
 - **Fait (étape 3, 30-31/10)** : raccourcis globaux démarrer/arrêter, pause, redémarrer (délai 3 s pour annuler), modifiables dans le menu des raccourcis. Raccourcis d'éditeur ajoutés : Ctrl/Cmd+E exporter, ←/→ ±1 s (Maj ±5 s), Début/Fin, M coupe le son de l'aperçu (Ctrl+S, Ctrl+O, annuler/rétablir, lecture, couper, supprimer existaient déjà).
 - **Abandonné pour l'instant (31/10, décision du propriétaire)** : couper le micro / le son système par raccourci pendant l'enregistrement. Un premier jet (raccourcis, icônes sur la barre, journal des coupures) a été écrit puis **annulé** : sans l'application dans l'éditeur (aperçu + export), il promettait un effet qui n'existait pas. À reprendre plus tard si besoin.
 
+- **Écrit (étape 4, 02/11), à tester** : `src/lib/typingActivity.ts` (catégories de frappe : « texte » / « édition », jamais la touche), capture des frappes par le crochet clavier (`electron/ipc/cursor/interaction.ts`, **Windows et Linux ; pas encore Mac**, où le crochet global est désactivé), règle de zoom dans `zoomSuggestionUtils.ts` (clic + au moins 2 touches de texte en 3 s, fermeture 2 s après la dernière frappe, jamais au-delà du zoom suivant, focus sur le clic). Ne vaut que pour les **nouveaux** enregistrements.
+
 ## Ordre de construction (validé le 27/10/2026, rien n'est commencé)
 1. Qualité d'aperçu. 2. Secours d'encodeur Windows (à tester sur le PC). 3. Raccourcis globaux + retour visuel. 4. Frappe et zoom.
 5. Composition libre, en quatre sous-étapes : cadre libre de l'écran, webcam déplaçable, grille + magnétisme + cadenas, compositions sauvegardées.

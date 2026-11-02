@@ -1138,7 +1138,9 @@ interface CursorTelemetryPoint {
 		| "double-click"
 		| "right-click"
 		| "middle-click"
-		| "mouseup";
+		| "mouseup"
+		| "key-text"
+		| "key-edit";
 	cursorType?:
 		| "arrow"
 		| "text"

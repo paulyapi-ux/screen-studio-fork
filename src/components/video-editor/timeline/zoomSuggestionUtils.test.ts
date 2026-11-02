@@ -219,3 +219,81 @@ describe("buildInteractionZoomSuggestions (click-cluster logic)", () => {
 		expect(s.end).toBeLessThanOrEqual(1_000);
 	});
 });
+
+describe("buildInteractionZoomSuggestions (typing keeps the zoom open)", () => {
+	const key = (
+		timeMs: number,
+		kind: "key-text" | "key-edit" = "key-text",
+	): CursorTelemetryPoint => ({
+		timeMs,
+		cx: 0.5,
+		cy: 0.5,
+		interactionType: kind,
+	});
+
+	function suggest(samples: CursorTelemetryPoint[]) {
+		return buildInteractionZoomSuggestions({
+			cursorTelemetry: withMoves(samples, TOTAL_MS),
+			totalMs: TOTAL_MS,
+			defaultDurationMs: 3_000,
+		});
+	}
+
+	it("keeps the zoom open while typing in a field and closes 2 s after the last key", () => {
+		const { suggestions } = suggest([
+			makeClick(5_000),
+			key(5_800),
+			key(6_000),
+			key(7_500),
+			key(9_000),
+		]);
+		expect(suggestions).toHaveLength(1);
+		expect(suggestions[0].start).toBe(5_000 - CLICK_CLUSTER_PAD_MS);
+		expect(suggestions[0].end).toBe(9_000 + 2_000);
+	});
+
+	it("is unchanged when there is no typing", () => {
+		const { suggestions } = suggest([makeClick(5_000)]);
+		expect(suggestions[0].end).toBe(5_000 + CLICK_CLUSTER_PAD_MS);
+	});
+
+	it("does nothing for a space held after a click (panning in a design tool)", () => {
+		const { suggestions } = suggest([
+			makeClick(5_000),
+			key(5_300, "key-edit"),
+			key(5_400, "key-edit"),
+			key(5_500, "key-edit"),
+			key(5_600, "key-edit"),
+		]);
+		expect(suggestions[0].end).toBe(5_000 + CLICK_CLUSTER_PAD_MS);
+	});
+
+	it("does nothing for one stray key after a click", () => {
+		const { suggestions } = suggest([makeClick(5_000), key(5_500)]);
+		expect(suggestions[0].end).toBe(5_000 + CLICK_CLUSTER_PAD_MS);
+	});
+
+	it("keeps the zoom focus on the click, not on the typing", () => {
+		const { suggestions } = suggest([
+			makeClick(5_000, 0.2, 0.3),
+			{ timeMs: 5_500, cx: 0.8, cy: 0.9, interactionType: "key-text" },
+			{ timeMs: 5_700, cx: 0.8, cy: 0.9, interactionType: "key-text" },
+		]);
+		expect(suggestions[0].focus.cx).toBeCloseTo(0.2);
+		expect(suggestions[0].focus.cy).toBeCloseTo(0.3);
+	});
+
+	it("never runs into the next zoom", () => {
+		const { suggestions } = suggest([
+			makeClick(5_000),
+			key(5_400),
+			key(5_600),
+			key(7_000),
+			key(9_000),
+			key(11_000),
+			makeClick(13_000),
+		]);
+		expect(suggestions).toHaveLength(2);
+		expect(suggestions[0].end).toBeLessThanOrEqual(suggestions[1].start);
+	});
+});
