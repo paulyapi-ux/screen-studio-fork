@@ -18,8 +18,8 @@ import type { useProjectState } from "../state/useProjectState";
 import { EditorExportMenu } from "./EditorExportMenu";
 import { EditorPresetMenu } from "./EditorPresetMenu";
 
-// Keep the preset implementation available for future use.
-const SHOW_PRESETS_BUTTON = false;
+// Saved compositions (layout, webcam, look) live in this menu.
+const SHOW_PRESETS_BUTTON = true;
 
 type Props = {
 	clipsOpen: boolean;
