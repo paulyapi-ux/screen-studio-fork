@@ -53,7 +53,10 @@ import {
 } from "@/components/video-editor/videoPlayback/motionSmoothing";
 import { getSceneEffectMetrics } from "@/components/video-editor/videoPlayback/sceneEffects";
 import { resolveSceneZoomTarget } from "@/components/video-editor/videoPlayback/sceneMotion";
-import { getWebcamMediaTargetTimeSeconds, isWebcamVisibleAtSourceTime } from "@/components/video-editor/videoPlayback/webcamSync";
+import {
+	getWebcamMediaTargetTimeSeconds,
+	isWebcamVisibleAtSourceTime,
+} from "@/components/video-editor/videoPlayback/webcamSync";
 import {
 	applyZoomTransform,
 	computeZoomTransform,
@@ -70,6 +73,7 @@ import {
 	scaleWebcamOverlayPixels,
 } from "@/components/video-editor/webcamOverlay";
 import { getAssetPath, getExportableVideoUrl, getRenderableAssetUrl } from "@/lib/assetPath";
+import type { NormalizedRect } from "@/lib/composition/geometry";
 import { drawSquircleOnCanvas, drawSquircleOnGraphics } from "@/lib/geometry/squircle";
 import {
 	clampMediaTimeToDuration,
@@ -119,6 +123,8 @@ interface FrameRenderConfig {
 	connectedZoomEasing?: ZoomTransitionEasing;
 	borderRadius?: number;
 	padding?: Padding | number;
+	/** Free composition: the screen fitted inside this canvas-fraction rectangle (replaces padding). */
+	screenRect?: NormalizedRect | null;
 	cropRegion: CropRegion;
 	webcam?: WebcamOverlaySettings;
 	webcamUrl?: string | null;
@@ -2723,7 +2729,12 @@ export class FrameRenderer {
 
 	private updateWebcamOverlay(referenceTimeSeconds = this.currentVideoTime): void {
 		const webcam = this.config.webcam;
-		if (!webcam?.enabled || !isWebcamVisibleAtSourceTime(webcam, referenceTimeSeconds) || !this.webcamRootContainer || !this.webcamMaskGraphics) {
+		if (
+			!webcam?.enabled ||
+			!isWebcamVisibleAtSourceTime(webcam, referenceTimeSeconds) ||
+			!this.webcamRootContainer ||
+			!this.webcamMaskGraphics
+		) {
 			if (this.webcamRootContainer) {
 				this.webcamRootContainer.visible = false;
 			}
@@ -2993,6 +3004,7 @@ export class FrameRenderer {
 			cropRegion,
 			borderRadius = 0,
 			padding = 0,
+			screenRect,
 			videoWidth,
 			videoHeight,
 		} = this.config;
@@ -3001,6 +3013,7 @@ export class FrameRenderer {
 			width,
 			height,
 			padding,
+			screenRect,
 			frameInsets: null,
 			cropRegion,
 			videoWidth,

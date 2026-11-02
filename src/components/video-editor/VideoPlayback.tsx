@@ -12,6 +12,7 @@ import {
 	useState,
 } from "react";
 import { getAssetPath, getRenderableAssetUrl, getRenderableVideoUrl } from "@/lib/assetPath";
+import type { NormalizedRect } from "@/lib/composition/geometry";
 import { getWebcamShadowFilter } from "@/lib/exporter/shadowProfile";
 import { getSquircleSvgPath } from "@/lib/geometry/squircle";
 import {
@@ -252,6 +253,7 @@ interface VideoPlaybackProps {
 	connectedZoomEasing?: ZoomTransitionEasing;
 	borderRadius?: number;
 	padding?: Padding | number;
+	screenRect?: NormalizedRect | null;
 	cropRegion?: import("./types").CropRegion;
 	/** Editor preview sharpness (Complete, 1/2, 1/4). Does not change exports. */
 	previewQuality?: PreviewQuality;
@@ -340,6 +342,7 @@ const VideoPlayback = forwardRef<VideoPlaybackRef, VideoPlaybackProps>(
 			connectedZoomEasing = DEFAULT_CONNECTED_ZOOM_EASING,
 			borderRadius = 0,
 			padding = DEFAULT_PADDING,
+			screenRect = null,
 			cropRegion,
 			previewQuality = DEFAULT_PREVIEW_QUALITY,
 			webcam,
@@ -1026,6 +1029,7 @@ const VideoPlayback = forwardRef<VideoPlaybackRef, VideoPlaybackProps>(
 				lockedVideoDimensions: lockedVideoDimensionsRef.current,
 				borderRadius,
 				padding,
+				screenRect,
 				frameInsets: null,
 			});
 
@@ -1082,6 +1086,7 @@ const VideoPlayback = forwardRef<VideoPlaybackRef, VideoPlaybackProps>(
 			cropRegion,
 			borderRadius,
 			padding,
+			screenRect,
 			applyWebcamBubbleLayout,
 			syncPreviewMotionBlurQuality,
 		]);
