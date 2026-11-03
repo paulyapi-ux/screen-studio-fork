@@ -1014,8 +1014,6 @@ export function SettingsPanel({
 	const [customImages, setCustomImages] = useState<string[]>(
 		initialEditorPreferences.customWallpapers,
 	);
-	const [experimentalUpdatesEnabled, setExperimentalUpdatesEnabled] = useState(false);
-	const [savingExperimentalUpdates, setSavingExperimentalUpdates] = useState(false);
 	const { openConfig: openShortcutsConfig } = useShortcuts();
 	const [internalActiveEffectSection] = useState<EditorEffectSection>("scene");
 	const activeEffectSection = activeEffectSectionProp ?? internalActiveEffectSection;
@@ -1034,44 +1032,6 @@ export function SettingsPanel({
 			...autoCaptionSettings,
 			...partial,
 		});
-	};
-
-	useEffect(() => {
-		let cancelled = false;
-		void window.electronAPI
-			.getExperimentalUpdatesEnabled()
-			.then((enabled) => {
-				if (!cancelled) setExperimentalUpdatesEnabled(enabled);
-			})
-			.catch((error) => {
-				console.error("Failed to load experimental updates preference:", error);
-			});
-		return () => {
-			cancelled = true;
-		};
-	}, []);
-
-	const updateExperimentalUpdatesPreference = async (enabled: boolean) => {
-		const previousValue = experimentalUpdatesEnabled;
-		setExperimentalUpdatesEnabled(enabled);
-		setSavingExperimentalUpdates(true);
-		try {
-			const result = await window.electronAPI.setExperimentalUpdatesEnabled(enabled);
-			setExperimentalUpdatesEnabled(result.enabled);
-			if (!result.success) {
-				toast.error(
-					result.error ||
-						tSettings("updates.saveFailed", "Failed to change the update channel."),
-				);
-			}
-		} catch (error) {
-			setExperimentalUpdatesEnabled(previousValue);
-			toast.error(
-				`${tSettings("updates.saveFailed", "Failed to change the update channel.")} ${String(error)}`,
-			);
-		} finally {
-			setSavingExperimentalUpdates(false);
-		}
 	};
 
 	useEffect(() => {
@@ -2310,32 +2270,6 @@ export function SettingsPanel({
 							</SelectContent>
 						</Select>
 					</SettingsRow>
-				</SettingsCategory>
-				<SettingsCategory category="advanced">
-					{advanced && (
-						<section className="flex flex-col gap-4">
-							<SectionLabel>{tSettings("updates.title", "Updates")}</SectionLabel>
-							<SettingsRow
-								title={tSettings("updates.experimental", "Experimental updates")}
-								description={tSettings(
-									"updates.experimentalDescription",
-									"This is the front line of user testing - highly experimental so expect bugs",
-								)}
-							>
-								<Switch
-									checked={experimentalUpdatesEnabled}
-									disabled={savingExperimentalUpdates}
-									onCheckedChange={(enabled) =>
-										void updateExperimentalUpdatesPreference(enabled)
-									}
-									aria-label={tSettings(
-										"updates.experimental",
-										"Experimental updates",
-									)}
-								/>
-							</SettingsRow>
-						</section>
-					)}
 				</SettingsCategory>
 				<SettingsCategory category="motion">
 					<section className="flex flex-col gap-6">

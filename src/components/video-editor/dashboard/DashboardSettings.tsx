@@ -47,7 +47,6 @@ export function DashboardSettings({ onImportFile }: { onImportFile: () => Promis
 			<SettingsSections
 				categories={[
 					"general",
-					"account",
 					"permissions",
 					"motion",
 					"recording",
@@ -56,7 +55,7 @@ export function DashboardSettings({ onImportFile }: { onImportFile: () => Promis
 				]}
 			>
 				<SettingsCategory
-					category={["general", "account", "permissions", "motion", "advanced"]}
+					category={["general", "permissions", "motion", "advanced"]}
 				>
 					{settingsContent}
 				</SettingsCategory>
@@ -120,24 +119,6 @@ export function DashboardSettings({ onImportFile }: { onImportFile: () => Promis
 									})
 								}
 							/>
-						</SettingsRow>
-					)}
-				</SettingsCategory>
-				<SettingsCategory category="advanced">
-					{import.meta.env.DEV && (
-						<SettingsRow title="Preview update UI">
-							<Button
-								variant="secondary"
-								size="sm"
-								disabled={busy}
-								onClick={() =>
-									void run(async () => {
-										await window.electronAPI.previewUpdateToast();
-									})
-								}
-							>
-								Preview
-							</Button>
 						</SettingsRow>
 					)}
 				</SettingsCategory>

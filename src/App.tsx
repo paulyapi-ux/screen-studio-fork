@@ -16,11 +16,6 @@ const CountdownOverlay = lazy(() =>
 		default: module.CountdownOverlay,
 	})),
 );
-const UpdateToastWindow = lazy(() =>
-	import("./components/launch/UpdateToastWindow").then((module) => ({
-		default: module.UpdateToastWindow,
-	})),
-);
 const EditorWindow = lazy(() => import("./components/video-editor/EditorWindow"));
 const CapturePicker = lazy(() => import("./components/capture-picker/CapturePicker"));
 
@@ -38,7 +33,6 @@ export default function App() {
 			windowType === "hud-overlay" ||
 			windowType === "source-selector" ||
 			windowType === "countdown" ||
-			windowType === "update-toast" ||
 			windowType === "capture-picker"
 		) {
 			document.body.style.background = "transparent";
@@ -51,10 +45,6 @@ export default function App() {
 			document.body.classList.add("hud-overlay-window");
 			document.getElementById("root")?.classList.add("hud-overlay-window");
 			window.electronAPI?.hudOverlaySetIgnoreMouse?.(true);
-		} else if (windowType === "update-toast") {
-			document.documentElement.style.overflow = "visible";
-			document.body.style.overflow = "visible";
-			document.getElementById("root")?.style.setProperty("overflow", "visible");
 		}
 	}, [windowType]);
 
@@ -75,9 +65,6 @@ export default function App() {
 			break;
 		case "countdown":
 			content = <CountdownOverlay />;
-			break;
-		case "update-toast":
-			content = <UpdateToastWindow />;
 			break;
 		case "editor":
 			content = <EditorWindow />;
