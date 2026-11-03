@@ -17,7 +17,6 @@ import {
 	Tray,
 } from "electron";
 import { RECORDINGS_DIR } from "./appPaths";
-import { createAuthCallbackController } from "./authCallback";
 import { showCursor } from "./cursorHider";
 import { getGpuSwitches } from "./gpuSwitches";
 import {
@@ -200,11 +199,6 @@ const hasSingleInstanceLock = shouldEnforceSingleInstanceLock
 if (!hasSingleInstanceLock) {
 	app.quit();
 }
-
-const authCallbacks = createAuthCallbackController({
-	isDev: IS_DEV,
-	focusApp: () => focusOrCreateMainWindow(),
-});
 
 function closeEditorWindowBypassingUnsavedPrompt(window: BrowserWindow | null) {
 	if (!window || window.isDestroyed()) {
@@ -885,7 +879,6 @@ function createSourceSelectorWindowWrapper() {
 app.on("before-quit", () => {
 	unregisterRecordingShortcuts();
 	isAppQuitting = true;
-	authCallbacks.close();
 	void clearRecordingTrashUndo().catch((error) =>
 		console.warn("Could not clear recording undo cache", error),
 	);
@@ -908,24 +901,12 @@ app.on("activate", () => {
 	focusOrCreateMainWindow();
 });
 
-app.on("second-instance", (_event, commandLine) => {
-	const authCallback = authCallbacks.find(commandLine);
-	if (authCallback) authCallbacks.dispatch(authCallback);
+app.on("second-instance", () => {
 	focusOrCreateMainWindow();
 });
 
 // Register all IPC handlers when app is ready
 app.whenReady().then(async () => {
-	authCallbacks.startDevServer();
-	if (process.defaultApp && process.argv[1]) {
-		app.setAsDefaultProtocolClient(authCallbacks.protocol, process.execPath, [
-			path.resolve(process.argv[1]),
-		]);
-	} else {
-		app.setAsDefaultProtocolClient(authCallbacks.protocol);
-	}
-	const startupAuthCallback = authCallbacks.find(process.argv);
-	if (startupAuthCallback) authCallbacks.dispatch(startupAuthCallback);
 
 	applyRecordingShortcuts(getRecordingShortcutsConfig());
 
