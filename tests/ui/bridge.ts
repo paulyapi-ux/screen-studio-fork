@@ -1,11 +1,8 @@
 import type { Page } from "@playwright/test";
-import { installSupabaseAuth } from "./auth";
 export async function installDesktopBridge(
 	page: Page,
 	videoFixture = "preview.mp4",
-	auth = { signedIn: true },
 ) {
-	await installSupabaseAuth(page, auth);
 	await page.addInitScript((videoFixture) => {
 		const success = async () => ({ success: true });
 		const subscribe = () => () => undefined;

@@ -10,7 +10,6 @@ import {
 import type { ComponentProps, ReactNode } from "react";
 import { useMemo, useState } from "react";
 import type { useI18n } from "@/contexts/I18nContext";
-import ExtensionManager from "../ExtensionManager";
 import { SettingsPanel } from "../SettingsPanel";
 import type { EditorEffectSection } from "../types";
 
@@ -138,11 +137,7 @@ export function EditorSidebar({
 									</Switch>
 								)}
 							</header>
-							{activeSection === "extensions" ? (
-								<ExtensionManager />
-							) : (
-								<SettingsPanel {...settingsPanelProps} advanced={advanced} />
-							)}
+							<SettingsPanel {...settingsPanelProps} advanced={advanced} />
 						</>
 					)}
 				</Card>
