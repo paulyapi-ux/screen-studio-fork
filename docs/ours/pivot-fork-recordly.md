@@ -95,6 +95,8 @@ Essai de l'encodeur matériel avant chaque enregistrement, bascule automatique v
 
 - **5d testée et validée (02/11)** (le bouton « Presets » de Recordly était caché ; il est maintenant visible, à gauche d'Exporter). **L'étape 5 (composition libre) est terminée.**
 
+- **Écrit (étape 6a, 03/11), à tester** : retirés de l'application : compte et connexion, onglet « Shared » et partage en ligne (lien), retours d'information et rapports d'erreur d'export, annonces (flux distant GitHub, bannières, cartes), mises à jour automatiques (et leurs fenêtres), lien Discord, place réservée « Extensions ». Retirés du dépôt : `services/` (serveurs de Recordly), `announcements.json`, `recordly.rb`, `.env.example`, workflows Homebrew et Winget, dépendances `@supabase/supabase-js` et `electron-updater`, protocole `recordly://`, publication GitHub d'electron-builder. **Il faut relancer `npm install`** après `git pull` (dépendances changées). Les tests Playwright (`tests/ui`) ne peuvent pas tourner dans l'environnement cloud (même la version d'origine y échoue) : ils n'ont pas été relancés. Reste pour 6b : nom, logo, README et documents, textes « Recordly » de l'interface, clés de traduction devenues inutiles, workflows de publication restants.
+
 ## Ordre de construction (validé le 27/10/2026, rien n'est commencé)
 1. Qualité d'aperçu. 2. Secours d'encodeur Windows (à tester sur le PC). 3. Raccourcis globaux + retour visuel. 4. Frappe et zoom.
 5. Composition libre, en quatre sous-étapes : cadre libre de l'écran, webcam déplaçable, grille + magnétisme + cadenas, compositions sauvegardées.
