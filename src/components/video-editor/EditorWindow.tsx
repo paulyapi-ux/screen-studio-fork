@@ -1,8 +1,6 @@
 import { useEffect } from "react";
 import { ShortcutsProvider } from "../../contexts/ShortcutsContext";
 import { loadAllCustomFonts } from "../../lib/customFonts";
-import { AnnouncementDialog } from "../announcements/AnnouncementDialog";
-import { LiveAnnouncementNotifications } from "../announcements/LiveAnnouncementNotifications";
 import { ShortcutsConfigDialog } from "./ShortcutsConfigDialog";
 import VideoEditor from "./VideoEditor";
 
@@ -19,8 +17,6 @@ export default function EditorWindow() {
 				<VideoEditor />
 				<ShortcutsConfigDialog />
 			</ShortcutsProvider>
-			<AnnouncementDialog audience="editor" />
-			<LiveAnnouncementNotifications audience="editor" />
 		</>
 	);
 }

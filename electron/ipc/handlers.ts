@@ -1,5 +1,4 @@
 import { BrowserWindow } from "electron";
-import { registerAnnouncementHandlers } from "./register/announcements";
 import { registerCapturePickerHandlers } from "./register/capturePicker";
 import { registerAssetHandlers } from "./register/assets";
 import { registerCaptionHandlers } from "./register/captions";
@@ -68,7 +67,6 @@ export function registerIpcHandlers(
 	registerCapturePickerHandlers({ pickSourceList });
 	registerRecordingHandlers(onRecordingStateChange);
 	registerPermissionHandlers();
-	registerAnnouncementHandlers();
 	registerAssetHandlers();
 	registerExportHandlers();
 	registerCaptionHandlers();

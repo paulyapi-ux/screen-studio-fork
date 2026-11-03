@@ -8,7 +8,6 @@ import { RecordingLibraryPanel } from "../library/RecordingLibraryPanel";
 import { RECORDING_DRAG_TYPE } from "@/types/recordingLibrary";
 import { Button } from "@/components/ui/button";
 import { useCallback, useMemo, useEffect, useRef, useState, type ComponentProps } from "react";
-import { EditorAnnouncementBanner } from "@/components/announcements/EditorAnnouncementBanner";
 import { Toaster } from "@/components/ui/toast";
 import type { useI18n } from "@/contexts/I18nContext";
 import type { useEditorExportController } from "../export/useEditorExportController";
@@ -245,7 +244,6 @@ export function EditorShell(props: Props) {
 				revealExportedFile={dialogActions.revealExportedFile}
 				exportMessage={exportMessage}
 			/>
-			<EditorAnnouncementBanner />
 			<div
 				className="relative flex min-h-0 flex-1 flex-col"
 				onPointerDownCapture={(event) => {

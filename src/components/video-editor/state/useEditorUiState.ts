@@ -1,6 +1,4 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { OPEN_EDITOR_SECTION_EVENT } from "@/lib/announcementActions";
-import { type AnnouncementEditorSection, isAnnouncementEditorSection } from "@/lib/announcements";
 import type { AspectRatio } from "@/utils/aspectRatioUtils";
 import type { loadEditorPreferences } from "../editorPreferences";
 import type { TimelineEditorHandle } from "../timeline/TimelineEditor";
@@ -73,14 +71,6 @@ export function useEditorUiState(
 
 	useEffect(() => {
 		void window.electronAPI?.getPlatform?.()?.then(setAppPlatform);
-	}, []);
-	useEffect(() => {
-		const handleOpenEditorSection = (event: Event) => {
-			const section = (event as CustomEvent<AnnouncementEditorSection>).detail;
-			if (isAnnouncementEditorSection(section)) setActiveEffectSection(section);
-		};
-		window.addEventListener(OPEN_EDITOR_SECTION_EVENT, handleOpenEditorSection);
-		return () => window.removeEventListener(OPEN_EDITOR_SECTION_EVENT, handleOpenEditorSection);
 	}, []);
 	useEffect(() => {
 		if (activeEffectSection === "frame" || activeEffectSection === "crop")

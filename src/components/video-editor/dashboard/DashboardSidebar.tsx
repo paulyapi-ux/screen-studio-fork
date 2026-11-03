@@ -2,7 +2,6 @@ import { Button } from "@/components/ui/button";
 import { File, GearSix, House, Plus } from "@/components/ui/icons";
 import { FolderRow } from "./FolderRow";
 import { RecordNewButton } from "./RecordNewButton";
-import { SidebarCards } from "./SidebarCards";
 
 import type { DashboardProps } from "./types";
 
@@ -117,7 +116,6 @@ export function DashboardSidebar({
 					))}
 				</div>
 				<div className="space-y-1 pt-6">
-					<SidebarCards />
 					<Button
 						variant="ghost"
 						className={navClass(section === "settings")}
