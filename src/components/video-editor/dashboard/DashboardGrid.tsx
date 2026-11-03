@@ -1,15 +1,10 @@
-import { LibrarySkeleton } from "./LibrarySkeleton";
-import { SharedRecordings } from "../cloud/SharedRecordings";
-import { CLOUD_SHARE_ENDPOINT } from "../cloud/endpoint";
-import { RecordNewButton } from "./RecordNewButton";
-import { RawPreview } from "./RawRecordings";
-import { Cloud, ImageSquare } from "@/components/ui/icons";
-
 import { Button } from "@/components/ui/button";
-
+import { ImageSquare } from "@/components/ui/icons";
 import { DashboardSettings } from "./DashboardSettings";
-
+import { LibrarySkeleton } from "./LibrarySkeleton";
 import { ProjectCard } from "./ProjectCard";
+import { RawPreview } from "./RawRecordings";
+import { RecordNewButton } from "./RecordNewButton";
 import type { DashboardProps } from "./types";
 
 import type { DashboardModel } from "./useDashboardModel";
@@ -25,10 +20,6 @@ export function DashboardGrid({
 	refreshRaw,
 	error,
 	section,
-	accountLabel,
-	authToken,
-	onSignIn,
-	onShareProject,
 	visible,
 	busy,
 	selecting,
@@ -56,10 +47,6 @@ export function DashboardGrid({
 	| "refreshRaw"
 	| "error"
 	| "section"
-	| "accountLabel"
-	| "authToken"
-	| "onSignIn"
-	| "onShareProject"
 	| "visible"
 	| "busy"
 	| "selecting"
@@ -86,32 +73,6 @@ export function DashboardGrid({
 				)}
 				{section === "settings" ? (
 					<DashboardSettings onImportFile={onImportFile} />
-				) : section === "shared" ? (
-					authToken && CLOUD_SHARE_ENDPOINT ? (
-						<div>
-							<SharedRecordings
-								key={authToken}
-								token={authToken}
-								endpoint={CLOUD_SHARE_ENDPOINT}
-								accountLabel={accountLabel}
-								standalone
-							/>
-						</div>
-					) : (
-						<div className="flex h-64 flex-col items-center justify-center gap-3 text-sm text-muted-foreground">
-							<Cloud weight="fill" className="size-8 opacity-40" />
-							<p>
-								{authToken
-									? "Cloud sharing is not available in this build yet."
-									: "Sign in to manage shared videos."}
-							</p>
-							{!authToken && (
-								<Button variant="secondary" onClick={onSignIn}>
-									Sign in
-								</Button>
-							)}
-						</div>
-					)
 				) : (isRaw ? rawLoading : loading) ? (
 					<LibrarySkeleton />
 				) : visible.length ? (
@@ -124,7 +85,6 @@ export function DashboardGrid({
 								key={entry.path}
 								onDelete={() => void deleteEntries([entry.path])}
 								{...{
-									accountLabel,
 									entry,
 									busy,
 									selecting,
@@ -132,7 +92,6 @@ export function DashboardGrid({
 									toggleSelected,
 									openEntry,
 									run,
-									onShareProject,
 									onRenameProject,
 									folders,
 									save,

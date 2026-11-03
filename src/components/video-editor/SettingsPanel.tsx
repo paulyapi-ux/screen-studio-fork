@@ -1,5 +1,3 @@
-import type { User } from "@supabase/supabase-js";
-import { AccountSettings } from "@/components/auth/AccountSettings";
 import { RecordingPermissionsSettings } from "@/components/auth/RecordingPermissionsSettings";
 import { SettingsSections, SettingsCategory } from "./SettingsSections";
 import { Card, RadioGroup, Radio, Label, Description } from "@heroui/react";
@@ -422,7 +420,6 @@ function CursorClickEffectCards({
 }
 
 interface SettingsPanelProps {
-	accountUser?: User | null;
 	onShowOnboarding?: () => void;
 	advanced?: boolean;
 	panelMode?: "editor" | "background";
@@ -880,7 +877,6 @@ function CursorStylePreview({
 }
 
 export function SettingsPanel({
-	accountUser = null,
 	onShowOnboarding,
 	advanced = false,
 	panelMode = "editor",
@@ -2257,13 +2253,10 @@ export function SettingsPanel({
 			<SettingsSections
 				categories={
 					advanced
-						? ["general", "account", "permissions", "motion", "advanced"]
-						: ["general", "account", "permissions", "motion"]
+						? ["general", "permissions", "motion", "advanced"]
+						: ["general", "permissions", "motion"]
 				}
 			>
-				<SettingsCategory category="account">
-					<AccountSettings key={accountUser?.id ?? "signed-out"} user={accountUser} />
-				</SettingsCategory>
 				<SettingsCategory category="permissions">
 					<RecordingPermissionsSettings onReview={onShowOnboarding} />
 				</SettingsCategory>
