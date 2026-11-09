@@ -2,6 +2,7 @@ import { spawn } from "node:child_process";
 import { constants as fsConstants } from "node:fs";
 import fs from "node:fs/promises";
 import { BrowserWindow } from "electron";
+import type { KeyCategory } from "../../../src/lib/typingActivity";
 import { ensureNativeCursorMonitorBinary, getCursorMonitorExePath } from "../paths/binaries";
 import {
 	currentCursorVisualType,
@@ -12,7 +13,7 @@ import {
 	setNativeCursorMonitorProcess,
 } from "../state";
 import type { CursorVisualType } from "../types";
-import { recordCursorMouseDown, recordCursorMouseUp } from "./interaction";
+import { recordCursorKey, recordCursorMouseDown, recordCursorMouseUp } from "./interaction";
 
 export function emitCursorStateChanged(cursorType: CursorVisualType) {
 	BrowserWindow.getAllWindows().forEach((window) => {
@@ -22,20 +23,35 @@ export function emitCursorStateChanged(cursorType: CursorVisualType) {
 	});
 }
 
+export type CursorMonitorInteraction =
+	| { kind: "mousedown"; button: 1 | 2 | 3 }
+	| { kind: "mouseup" }
+	| { kind: "key"; category: KeyCategory };
+
+/** Reads one `INTERACTION:` line from the native cursor monitor, or null for anything else. */
+export function parseCursorMonitorInteraction(line: string): CursorMonitorInteraction | null {
+	const mouse = line.match(/^INTERACTION:(mousedown|mouseup)(?::([123]))?$/);
+	if (mouse) {
+		if (mouse[1] === "mouseup") return { kind: "mouseup" };
+		const button = Number(mouse[2]);
+		return { kind: "mousedown", button: button === 2 || button === 3 ? button : 1 };
+	}
+	const key = line.match(/^INTERACTION:key:(text|edit)$/);
+	if (key) return { kind: "key", category: key[1] as KeyCategory };
+	return null;
+}
+
 export function handleCursorMonitorStdout(chunk: Buffer) {
 	setNativeCursorMonitorOutputBuffer(nativeCursorMonitorOutputBuffer + chunk.toString());
 	const lines = nativeCursorMonitorOutputBuffer.split(/\r?\n/);
 	setNativeCursorMonitorOutputBuffer(lines.pop() ?? "");
 
 	for (const line of lines) {
-		const interactionMatch = line.match(/^INTERACTION:(mousedown|mouseup)(?::([123]))?$/);
-		if (interactionMatch) {
-			if (interactionMatch[1] === "mouseup") {
-				recordCursorMouseUp();
-			} else {
-				const button = Number(interactionMatch[2]);
-				recordCursorMouseDown(button === 2 || button === 3 ? button : 1);
-			}
+		const interaction = parseCursorMonitorInteraction(line);
+		if (interaction) {
+			if (interaction.kind === "mouseup") recordCursorMouseUp();
+			else if (interaction.kind === "mousedown") recordCursorMouseDown(interaction.button);
+			else recordCursorKey(interaction.category);
 			continue;
 		}
 

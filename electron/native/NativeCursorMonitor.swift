@@ -448,6 +448,53 @@ func mouseInteractionCallback(
 	return Unmanaged.passUnretained(event)
 }
 
+// Keystrokes are reported by category only ("text" or "edit"), never as the key itself, so what
+// was typed cannot be read back. The zoom uses them to stay open while someone types in a text
+// field. Key codes are macOS virtual key codes (physical keys, independent of the layout).
+let textKeyCodes: Set<Int64> = [
+	// Letters
+	0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 12, 13, 14, 15, 16, 17, 31, 32, 34, 35, 37, 38, 40, 45, 46,
+	// Digits (top row)
+	18, 19, 20, 21, 22, 23, 25, 26, 28, 29,
+	// Punctuation: = - ] [ ' ; \ , / . `
+	24, 27, 30, 33, 39, 41, 42, 43, 44, 47, 50,
+	// Keypad digits and operators
+	65, 67, 69, 75, 78, 81, 82, 83, 84, 85, 86, 87, 88, 89, 91, 92,
+]
+let editKeyCodes: Set<Int64> = [
+	36, // Return
+	48, // Tab
+	49, // Space
+	51, // Delete (backspace)
+	76, // Keypad Enter
+	117, // Forward delete
+]
+
+func keyInteractionCallback(
+	proxy: CGEventTapProxy,
+	type: CGEventType,
+	event: CGEvent,
+	refcon: UnsafeMutableRawPointer?
+) -> Unmanaged<CGEvent>? {
+	guard type == .keyDown else {
+		return Unmanaged.passUnretained(event)
+	}
+	// Shortcuts (Cmd/Ctrl/Option + key) are commands, not typing.
+	let flags = event.flags
+	if flags.contains(.maskCommand) || flags.contains(.maskControl) || flags.contains(.maskAlternate) {
+		return Unmanaged.passUnretained(event)
+	}
+	let keyCode = event.getIntegerValueField(.keyboardEventKeycode)
+	if textKeyCodes.contains(keyCode) {
+		print("INTERACTION:key:text")
+		fflush(stdout)
+	} else if editKeyCodes.contains(keyCode) {
+		print("INTERACTION:key:edit")
+		fflush(stdout)
+	}
+	return Unmanaged.passUnretained(event)
+}
+
 let mouseEventTypes: [CGEventType] = [
 	.leftMouseDown,
 	.leftMouseUp,
@@ -473,6 +520,23 @@ if let mouseEventTap,
 	CGEvent.tapEnable(tap: mouseEventTap, enable: true)
 } else {
 	fputs("Mouse interaction event tap unavailable; click telemetry disabled\n", stderr)
+	fflush(stderr)
+}
+
+let keyEventTap = CGEvent.tapCreate(
+	tap: .cgSessionEventTap,
+	place: .headInsertEventTap,
+	options: .listenOnly,
+	eventsOfInterest: CGEventMask(1) << CGEventType.keyDown.rawValue,
+	callback: keyInteractionCallback,
+	userInfo: nil
+)
+if let keyEventTap,
+	let keyTapSource = CFMachPortCreateRunLoopSource(kCFAllocatorDefault, keyEventTap, 0) {
+	CFRunLoopAddSource(CFRunLoopGetMain(), keyTapSource, .commonModes)
+	CGEvent.tapEnable(tap: keyEventTap, enable: true)
+} else {
+	fputs("Keyboard event tap unavailable (needs Input Monitoring); typing-aware zoom disabled\n", stderr)
 	fflush(stderr)
 }
 
