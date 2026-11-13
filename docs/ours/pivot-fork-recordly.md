@@ -99,6 +99,8 @@ Essai de l'encodeur matériel avant chaque enregistrement, bascule automatique v
 
 - **Étape 4 sur Mac (09/11), à tester** : l'assistant natif du curseur (`NativeCursorMonitor.swift`) rapporte maintenant aussi les frappes, **par catégorie seulement** (`INTERACTION:key:text` / `key:edit`, jamais la touche), en ignorant les raccourcis Cmd/Ctrl/Option. Demande l'autorisation « Surveillance de l'entrée ». Non compilé sur Linux (pas de Swift) : il se recompile tout seul au premier enregistrement sur le Mac. **Testé et validé par le propriétaire sur Mac (09/11).**
 
+- **Étape 6b (13/11), écrite, à tester** : nom de travail **Take** (provisoire ; centralisé dans `src/lib/appInfo.ts`), logo provisoire (clap de cinéma, `branding/generate_icons.py`), fichiers de projet `.take` (les `.recordly` et `.openscreen` s'ouvrent toujours), identifiants d'installation (`com.paulyapi.take`), textes de l'interface et traductions, README, section **Réglages > À propos** avec les **crédits exigés par la licence** (Recordly / OpenScreen, AGPL-3.0, lien vers le code source). Gardés pour l'instant (invisibles) : clés de stockage `recordly.*`, variables `RECORDLY_*`, noms des assistants natifs, dossier `.recordly-*` des enregistrements. **À savoir** : le dossier de données change (`Take-dev`), donc l'application repart à vide ; pour **distribuer**, l'AGPL oblige à rendre le code source disponible (le dépôt est privé aujourd'hui).
+
 ## Ordre de construction (validé le 27/10/2026, rien n'est commencé)
 1. Qualité d'aperçu. 2. Secours d'encodeur Windows (à tester sur le PC). 3. Raccourcis globaux + retour visuel. 4. Frappe et zoom.
 5. Composition libre, en quatre sous-étapes : cadre libre de l'écran, webcam déplaçable, grille + magnétisme + cadenas, compositions sauvegardées.
