@@ -1,3 +1,4 @@
+import { AboutSettings } from "../AboutSettings";
 import { SettingsSections, SettingsCategory } from "../SettingsSections";
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 import { SettingsRow } from "../SettingsRow";
@@ -52,12 +53,16 @@ export function DashboardSettings({ onImportFile }: { onImportFile: () => Promis
 					"recording",
 					"files",
 					"advanced",
+					"about",
 				]}
 			>
 				<SettingsCategory
 					category={["general", "permissions", "motion", "advanced"]}
 				>
 					{settingsContent}
+				</SettingsCategory>
+				<SettingsCategory category="about">
+					<AboutSettings />
 				</SettingsCategory>
 				<SettingsCategory category="files">
 					<SettingsRow title="Open video or project">
