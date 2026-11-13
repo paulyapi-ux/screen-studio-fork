@@ -4,6 +4,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { promisify } from "node:util";
 import { app } from "electron";
+import { APP_NAME } from "../../../src/lib/appInfo";
 import { getFfmpegBinaryPath } from "../ffmpeg/binary";
 import { getBundledWhisperExecutableCandidates } from "../paths/binaries";
 import { resolveRecordingSession } from "../project/session";
@@ -13,10 +14,10 @@ import {
 } from "../recording/diagnostics";
 import { normalizeVideoSourcePath } from "../utils";
 import { type CaptionAudioCandidate, getCaptionCompanionAudioCandidates } from "./audioCandidates";
-import { shouldRetryWhisperWithoutJson } from "./parser";
-import { readWhisperCaptionOutput } from "./output";
-import { isMissingWindowsWhisperRuntimeDependency } from "./runtimeErrors";
 import { mergeCaptionSources } from "./mergeSources";
+import { readWhisperCaptionOutput } from "./output";
+import { shouldRetryWhisperWithoutJson } from "./parser";
+import { isMissingWindowsWhisperRuntimeDependency } from "./runtimeErrors";
 import { segmentCuesIntoPhrases } from "./segment";
 import {
 	parseSilenceIntervals,
@@ -105,7 +106,7 @@ export async function resolveWhisperExecutablePath(preferredPath?: string | null
 
 	throw new Error(
 		`No Whisper runtime was found for ${process.platform}/${process.arch}. ` +
-			"This Recordly build is missing its bundled caption runtime. Reinstall or update Recordly, or select a whisper-cli executable in Caption settings.",
+			`This ${APP_NAME} build is missing its bundled caption runtime. Reinstall or update ${APP_NAME}, or select a whisper-cli executable in Caption settings.`,
 	);
 }
 

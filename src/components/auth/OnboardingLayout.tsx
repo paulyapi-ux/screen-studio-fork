@@ -1,6 +1,7 @@
-import type { ReactNode } from "react";
 import { Description, Modal } from "@heroui/react";
 import { motion, useReducedMotion } from "motion/react";
+import type { ReactNode } from "react";
+import { APP_NAME } from "@/lib/appInfo";
 import "./Onboarding.css";
 
 type OnboardingStage = "account" | "permissions";
@@ -112,14 +113,14 @@ export function OnboardingHeader({
 				<div
 					data-onboarding-brand
 					className="mb-3 flex items-center gap-2.5"
-					aria-label="Recordly"
+					aria-label={APP_NAME}
 				>
 					<img
-						src={`${import.meta.env.BASE_URL}app-icons/recordly-128.png`}
+						src={`${import.meta.env.BASE_URL}app-icons/take-128.png`}
 						alt=""
 						className="size-10 rounded-xl"
 					/>
-					<span className="text-lg font-semibold tracking-tight">Recordly</span>
+					<span className="text-lg font-semibold tracking-tight">{APP_NAME}</span>
 				</div>
 			)}
 			<Modal.Heading className="text-2xl font-semibold leading-tight tracking-tight sm:text-3xl">

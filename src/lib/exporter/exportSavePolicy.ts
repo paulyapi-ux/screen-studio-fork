@@ -1,3 +1,5 @@
+import { APP_NAME } from "@/lib/appInfo";
+
 export const MAX_IN_MEMORY_EXPORT_BYTES = 0x7fffffff;
 
 export function normalizeExportExtension(extension: string): string {
@@ -39,8 +41,8 @@ export function describeBlockedInMemoryExportSave({
 }): string {
 	const normalizedExtension = normalizeExportExtension(extension) || "export";
 	if (isExportTooLargeForInMemorySave(blobSize)) {
-		return `The ${normalizedExtension.toUpperCase()} export is too large to save through the legacy in-memory path. Please retry the export so Recordly can save it through the temp-file streaming path.`;
+		return `The ${normalizedExtension.toUpperCase()} export is too large to save through the legacy in-memory path. Please retry the export so ${APP_NAME} can save it through the temp-file streaming path.`;
 	}
 
-	return `The ${normalizedExtension.toUpperCase()} export could not be saved through the temp-file streaming path, and Recordly will not fall back to the legacy in-memory path for MP4 exports. Please retry the export.`;
+	return `The ${normalizedExtension.toUpperCase()} export could not be saved through the temp-file streaming path, and ${APP_NAME} will not fall back to the legacy in-memory path for MP4 exports. Please retry the export.`;
 }

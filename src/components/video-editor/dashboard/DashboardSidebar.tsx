@@ -1,3 +1,4 @@
+import { APP_NAME } from "@/lib/appInfo";
 import { Button } from "@/components/ui/button";
 import { File, GearSix, House, Plus } from "@/components/ui/icons";
 import { FolderRow } from "./FolderRow";
@@ -38,11 +39,11 @@ export function DashboardSidebar({
 			>
 				<div className="mb-4 flex h-10 items-center gap-2.5 px-3">
 					<img
-						src={`${import.meta.env.BASE_URL}app-icons/recordly-64.png`}
+						src={`${import.meta.env.BASE_URL}app-icons/take-64.png`}
 						alt=""
 						className="size-7 rounded-lg"
 					/>
-					<span className="text-[15px] font-semibold tracking-tight">Recordly</span>
+					<span className="text-[15px] font-semibold tracking-tight">{APP_NAME}</span>
 				</div>
 				<RecordNewButton busy={busy} run={run} className="mb-5 w-full" />
 				<nav className="space-y-1">

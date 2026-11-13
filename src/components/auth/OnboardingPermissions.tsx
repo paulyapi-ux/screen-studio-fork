@@ -1,6 +1,7 @@
-import { useCallback, useEffect, useState } from "react";
 import { Button } from "@heroui/react";
 import { ArrowLeft, ArrowRight, Check, Cursor, Monitor } from "@phosphor-icons/react";
+import { useCallback, useEffect, useState } from "react";
+import { APP_NAME } from "@/lib/appInfo";
 import { OnboardingBody, OnboardingFooter, OnboardingHeader } from "./OnboardingLayout";
 import { PermissionsConfetti } from "./PermissionsConfetti";
 
@@ -102,7 +103,7 @@ export function OnboardingPermissions({
 				) : (
 					<>
 						<OnboardingHeader
-							title="Allow Recordly to record"
+							title={`Allow ${APP_NAME} to record`}
 							description={
 								platform === "mac"
 									? "Enable these permissions in macOS System Settings."
@@ -165,7 +166,7 @@ export function OnboardingPermissions({
 									<p className="flex-1 text-xs leading-relaxed text-muted">
 										{screenGranted && accessibilityGranted
 											? "Your screen is captured only when you start recording. Microphone and camera access are requested when you use them."
-											: "Return after enabling access. macOS may require restarting Recordly."}
+											: `Return after enabling access. macOS may require restarting ${APP_NAME}.`}
 									</p>
 									{(!screenGranted || !accessibilityGranted) && (
 										<Button

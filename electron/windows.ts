@@ -1,22 +1,23 @@
-import { resolveEditorStartupView } from "./editorStartupView";
-import { currentProjectPath, currentVideoPath, currentRecordingSession } from "./ipc/state";
-import { isHudInEditorMode } from "./hudEditorMode";
 import fs from "node:fs";
 import { createRequire } from "node:module";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { app, BrowserWindow, ipcMain, type WebContents } from "electron";
+import { APP_NAME } from "../src/lib/appInfo";
 import {
-	supportsHudCaptureProtection,
 	shouldProtectHudCapture,
+	supportsHudCaptureProtection,
 } from "../src/lib/hudCaptureProtection";
 import { USER_DATA_PATH } from "./appPaths";
+import { resolveEditorStartupView } from "./editorStartupView";
+import { isHudInEditorMode } from "./hudEditorMode";
 import {
 	getHudOverlayWindowBounds,
 	resizeHudOverlayFallbackBounds,
 	shouldExpandHudOverlayFallback,
 } from "./hudOverlayBounds";
 import { getHudOverlayTaskbarOptions } from "./hudOverlayWindowOptions";
+import { currentProjectPath, currentRecordingSession, currentVideoPath } from "./ipc/state";
 import { getPackagedRendererBaseUrl } from "./rendererServer";
 
 const electronWindowsDir = path.dirname(fileURLToPath(import.meta.url));
@@ -25,8 +26,7 @@ const nodeRequire = createRequire(import.meta.url);
 const APP_ROOT = path.join(electronWindowsDir, "..");
 const VITE_DEV_SERVER_URL = process.env["VITE_DEV_SERVER_URL"];
 const RENDERER_DIST = path.join(APP_ROOT, "dist");
-const WINDOW_ICON_FILENAME =
-	process.platform === "darwin" ? "recordlymac-512.png" : "recordly-512.png";
+const WINDOW_ICON_FILENAME = process.platform === "darwin" ? "takemac-512.png" : "take-512.png";
 const WINDOW_ICON_PATH = path.join(
 	process.env.VITE_PUBLIC || RENDERER_DIST,
 	"app-icons",
@@ -698,7 +698,6 @@ export function setHudOverlayRecordingActive(recording: boolean): void {
 	setHudOverlayMousePassthrough(true);
 }
 
-
 function loadPackagedEditorWindow(win: BrowserWindow) {
 	const query = getEditorWindowQuery();
 	const queryString = new URLSearchParams(query).toString();
@@ -826,7 +825,7 @@ export function createEditorWindow(): BrowserWindow {
 		resizable: true,
 		alwaysOnTop: false,
 		skipTaskbar: false,
-		title: "Recordly",
+		title: APP_NAME,
 		show: false,
 		backgroundColor: "#000000",
 		webPreferences: {

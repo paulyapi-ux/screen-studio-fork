@@ -1,3 +1,4 @@
+import { APP_NAME } from "../src/lib/appInfo";
 import fs from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
@@ -244,7 +245,7 @@ let defaultTrayIcon: ReturnType<typeof getTrayIcon> | null = null;
 let recordingTrayIcon: ReturnType<typeof getTrayIcon> | null = null;
 
 function getPlatformAppIconFilename(size: 32 | 128 | 512) {
-	const baseName = process.platform === "darwin" ? "recordlymac" : "recordly";
+	const baseName = process.platform === "darwin" ? "takemac" : "take";
 	return `app-icons/${baseName}-${size}.png`;
 }
 
@@ -563,7 +564,7 @@ function syncDockIcon() {
 function updateTrayMenu(recording: boolean = false) {
 	if (!tray) return;
 	const trayIcon = recording ? getRecordingTrayIcon() : getDefaultTrayIcon();
-	const trayToolTip = recording ? `Recording: ${selectedSourceName}` : "Recordly";
+	const trayToolTip = recording ? `Recording: ${selectedSourceName}` : APP_NAME;
 	const menuTemplate = recording
 		? [
 				{
@@ -755,7 +756,7 @@ app.whenReady().then(async () => {
 	applyRecordingShortcuts(getRecordingShortcutsConfig());
 
 	if (process.platform === "win32") {
-		app.setAppUserModelId("dev.recordly.app");
+		app.setAppUserModelId("com.paulyapi.take");
 
 		// Test the hardware H.264 encoder in the background so that pressing Record never waits
 		// for it. The result is handed to each recording (see encoderProbe.ts).

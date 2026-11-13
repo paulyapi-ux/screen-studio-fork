@@ -1,16 +1,17 @@
-import { createSourceListPicker } from "../../sourceListPicker";
-import { writeAppSetting } from "../../appSettingsStore";
-import { getSessionCaptureSource, validateCaptureSource } from "../captureSelection";
-import { createRecordingEditorNavigation } from "../../recordingEditorNavigation";
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
 import { app, BrowserWindow, desktopCapturer, ipcMain, systemPreferences } from "electron";
+import { APP_NAME, APP_NAME_LOWERCASE } from "../../../src/lib/appInfo";
+import { writeAppSetting } from "../../appSettingsStore";
+import { createRecordingEditorNavigation } from "../../recordingEditorNavigation";
+import { createSourceListPicker } from "../../sourceListPicker";
 import {
-	setHudRecordingPreparationActive,
 	createHudOverlayWindow,
 	getHudOverlayWindow,
 	reassertHudOverlayMousePassthrough,
+	setHudRecordingPreparationActive,
 } from "../../windows";
+import { getSessionCaptureSource, validateCaptureSource } from "../captureSelection";
 import { ALLOW_RECORDLY_WINDOW_CAPTURE } from "../constants";
 import {
 	getNativeMacWindowSources,
@@ -19,9 +20,9 @@ import {
 	stopWindowBoundsCapture,
 } from "../cursor/bounds";
 import { getDisplayBoundsForSource, getDisplayWorkAreaForSource } from "../recording/ffmpeg";
+import { getSourceArea } from "../sourceArea";
 import { isCursorCaptureActive, selectedSource, setSelectedSource } from "../state";
 import type { SelectedSource, WindowBounds } from "../types";
-import { getSourceArea } from "../sourceArea";
 import { getScreen, parseWindowId } from "../utils";
 import { bringWindowsWindowForward, resolveWindowsWindowBounds } from "../windowsWindowControl";
 import {
@@ -176,7 +177,7 @@ export async function getDesktopSources(
 	const ownWindowNames = new Set(
 		[
 			app.getName(),
-			"Recordly",
+			APP_NAME,
 			...BrowserWindow.getAllWindows().flatMap((win) => {
 				const title = win.getTitle().trim();
 				return title ? [title] : [];
@@ -246,7 +247,7 @@ export async function getDesktopSources(
 					return true;
 				}
 
-				if (ALLOW_RECORDLY_WINDOW_CAPTURE && normalizedName.includes("recordly")) {
+				if (ALLOW_RECORDLY_WINDOW_CAPTURE && normalizedName.includes(APP_NAME_LOWERCASE)) {
 					return true;
 				}
 
@@ -302,7 +303,8 @@ export async function getDesktopSources(
 
 				if (
 					ALLOW_RECORDLY_WINDOW_CAPTURE &&
-					(normalizedAppName === "recordly" || normalizedWindowName?.includes("recordly"))
+					(normalizedAppName === APP_NAME_LOWERCASE ||
+						normalizedWindowName?.includes(APP_NAME_LOWERCASE))
 				) {
 					return true;
 				}
@@ -361,7 +363,7 @@ export async function getDesktopSources(
 					return true;
 				}
 
-				if (ALLOW_RECORDLY_WINDOW_CAPTURE && normalizedName.includes("recordly")) {
+				if (ALLOW_RECORDLY_WINDOW_CAPTURE && normalizedName.includes(APP_NAME_LOWERCASE)) {
 					return true;
 				}
 

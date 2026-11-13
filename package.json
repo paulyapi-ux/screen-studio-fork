@@ -1,15 +1,15 @@
 {
-	"name": "recordly",
-	"productName": "Recordly",
+	"name": "take",
+	"productName": "Take",
 	"description": "A free, creator-focused screen recorder with auto-zoom, cursor effects, backgrounds, annotations, and more - built for polished videos out of the box.",
 	"author": "webadderall",
-	"homepage": "https://github.com/webadderallorg/Recordly",
+	"homepage": "https://github.com/paulyapi-ux/screen-studio-fork",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/webadderallorg/Recordly.git"
+		"url": "https://github.com/paulyapi-ux/screen-studio-fork.git"
 	},
 	"bugs": {
-		"url": "https://github.com/webadderallorg/Recordly/issues"
+		"url": "https://github.com/paulyapi-ux/screen-studio-fork/issues"
 	},
 	"private": true,
 	"version": "1.4.0",
